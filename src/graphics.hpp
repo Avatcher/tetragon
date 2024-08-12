@@ -55,6 +55,43 @@ public:
    virtual Window* get_window(GLFWwindow* window) const = 0;
 };
 
+enum class ShaderType {
+   VERTEX, FRAGMENT   
+};
+
+class Shader {
+   const ShaderType m_type;
+   const GLuint m_object;
+public:
+   Shader(ShaderType type, const char* source);
+   Shader(Shader const&) = delete;
+   virtual ~Shader();
+
+   ShaderType get_type() const;
+
+   friend class ShaderProgram;
+};
+
+class ShaderProgram {
+   const GLuint m_object;
+
+   ShaderProgram(GLuint program);
+public:
+   ShaderProgram(ShaderProgram const&) = delete;
+   ~ShaderProgram();
+
+   void bind();
+
+   class Builder {
+      GLuint m_object;
+   public:
+      Builder();
+
+      ShaderProgram::Builder& attach_shader(Shader const& shader);
+      ShaderProgram build() const;
+   };
+};
+
 } // tetragon
 
 #endif // TETRAGON_APPLICATION_H

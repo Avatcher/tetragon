@@ -1,5 +1,8 @@
+#define GL_GLEXT_PROTOTYPES
+
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include <spdlog/spdlog.h>
 #include <cstdio>
 #include <map>
 #include <iostream>
@@ -99,6 +102,76 @@ WindowManager* const WindowManager::INSTANCE = &windowManager;
 
 GLFWwindow* WindowManager::get_glfw_window(Window* window) {
    return window->m_window;
+}
+
+namespace {
+   int convert_shader_type(ShaderType type) {
+      switch (type) {
+         case ShaderType::VERTEX: return GL_VERTEX_SHADER;
+         case ShaderType::FRAGMENT: return GL_FRAGMENT_SHADER;
+      }
+      throw std::runtime_error("Unexpected shader type");
+   }
+
+   GLuint create_shader(ShaderType type, const char* source) {
+      GLuint shader = glCreateShader(convert_shader_type(type));
+      glShaderSource(shader, 1, &source, nullptr);
+      glCompileShader(shader);
+      int success;
+      char message[512];
+      glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+      if (!success) {
+         glGetShaderInfoLog(shader,512, nullptr, message);
+         spdlog::error("Failed to build a shader: {}", message);
+         throw std::runtime_error(message);
+      }
+      return shader;
+   }
+}
+
+Shader::Shader(ShaderType type, const char* source):
+      m_type(type), m_object(create_shader(type, source)) {
+}
+
+Shader::~Shader() {
+   glDeleteShader(m_object);
+}
+
+ShaderType Shader::get_type() const {
+   return m_type;
+}
+
+ShaderProgram::ShaderProgram(GLuint program): m_object(program) {
+}
+
+ShaderProgram::~ShaderProgram() {
+   glDeleteProgram(m_object);
+}
+
+void ShaderProgram::bind() {
+   glUseProgram(m_object);
+}
+
+ShaderProgram::Builder::Builder() {
+   m_object = glCreateProgram();
+}
+
+ShaderProgram::Builder& ShaderProgram::Builder::attach_shader(Shader const& shader) {
+   glAttachShader(m_object, shader.m_object);
+   return *this;
+}
+
+ShaderProgram ShaderProgram::Builder::build() const {
+   glLinkProgram(m_object);
+   int success;
+   char message[512];
+   glGetProgramiv(m_object, GL_LINK_STATUS, &success);
+   if (!success) {
+      glGetProgramInfoLog(m_object, 512, nullptr, message);
+      spdlog::error("Failed to link a shader program: {}", message);
+      throw std::runtime_error(message);
+   }
+   return ShaderProgram(m_object);
 }
 
 } // tetragon

@@ -52,48 +52,18 @@ int main() {
    glBindBuffer(GL_ARRAY_BUFFER, VBO);
    glBufferData(GL_ARRAY_BUFFER, sizeof(vertecies), vertecies, GL_STATIC_DRAW);
 
+   using namespace tetragon;
+
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
-   Object vertexShader;
-   vertexShader = glCreateShader(GL_VERTEX_SHADER);
-   glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-   glCompileShader(vertexShader);
-   int success;
-   char infoLog[512];
-   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-   if (!success) {
-      glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-      error("Vertex shader compilation failed: {}", infoLog);
-      glfwTerminate();
-      return -1;
-   }
-
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
-   Object fragmentShader;
-   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-   glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-   glCompileShader(fragmentShader);
-   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-   if (!success) {
-      glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-      error("Fragment shader compilation failed: {}", infoLog);
-      glfwTerminate();
-      return -1;
-   }
 
-   Object shaderProgram = glCreateProgram();
-   glAttachShader(shaderProgram, vertexShader);
-   glAttachShader(shaderProgram, fragmentShader);
-   glLinkProgram(shaderProgram);
-   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-   if (!success) {
-      glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-      error("Shader program linking failed: {}", infoLog);
-      glfwTerminate();
-      return -1;
-   }
-   glUseProgram(shaderProgram);
-   glDeleteShader(vertexShader);
-   glDeleteShader(fragmentShader);
+   Shader vertexShader(ShaderType::VERTEX, vertexShaderSource);
+   Shader fragmentShader(ShaderType::FRAGMENT, fragmentShaderSource);
+   ShaderProgram shaderProgram = ShaderProgram::Builder()
+      .attach_shader(vertexShader)
+      .attach_shader(fragmentShader)
+      .build();
+   shaderProgram.bind();
 
    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
    glEnableVertexAttribArray(0);
@@ -103,7 +73,7 @@ int main() {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
    
-      glUseProgram(shaderProgram);
+      shaderProgram.bind();
       glBindVertexArray(VAO);
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
