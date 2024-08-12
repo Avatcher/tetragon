@@ -113,6 +113,16 @@ public:
    void bind();
    void buffer(const void* ptr, unsigned long size);
    void buffer(const void* ptr, unsigned long size, Usage usage);
+   
+   template<class T>
+   void buffer(T const& data) {
+      buffer(data, Usage::DYNAMIC);
+   }
+
+   template<class T>
+   void buffer(T const& data, Usage usage) {
+      data.buffer_to(*this, usage);
+   }
 };
 
 class VertexArray {
@@ -122,6 +132,32 @@ public:
    virtual ~VertexArray();
 
    void bind();
+};
+
+class Vertex {
+public:
+   float x, y, z;
+
+   Vertex();
+   Vertex(std::initializer_list<float> values);
+
+   void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const;
+};
+
+class Shape {
+public:
+   virtual unsigned int vertex_count() const = 0;
+   virtual void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const = 0;
+};
+
+class Triangle : public Shape {
+public:
+   Vertex a, b, c;
+
+   Triangle(Vertex, Vertex, Vertex);
+
+   unsigned int vertex_count() const override;
+   void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const override;
 };
 
 } // tetragon

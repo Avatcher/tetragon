@@ -35,20 +35,19 @@ int main() {
    } window;
    window.make_context();
 
-   float vertecies[] = {
-      -.5f, -.5f, .0f,
-       .5f, -.5f, .0f,
-       .0f,  .5f, .0f   
-   };
-
-   using Object = unsigned int;
    using namespace tetragon;
+
+   const Triangle triangle{
+      { -.5f, -.5f, .0f },
+      {  .5f, -.5f, .0f },
+      {  .0f,  .75f, .0f }
+   };
 
    VertexArray VAO;
    VAO.bind(); 
 
    VertexBuffer VBO;
-   VBO.buffer(vertecies, sizeof(vertecies), VertexBuffer::Usage::STATIC);
+   VBO.buffer(triangle, VertexBuffer::Usage::STATIC);
 
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
@@ -69,7 +68,7 @@ int main() {
    
       shaderProgram.bind();
       VAO.bind();
-      glDrawArrays(GL_TRIANGLES, 0, 3);
+      glDrawArrays(GL_TRIANGLES, 0, triangle.vertex_count());
 
       window.swap_buffers();
       glfwPollEvents();
