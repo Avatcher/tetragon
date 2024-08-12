@@ -99,7 +99,12 @@ class VertexAttribute {
 };
 
 class VertexBuffer {
+   using byte = char;
+   
    const Object m_object;
+   byte* m_buffer;
+   byte* m_ptr;
+   unsigned int m_size;
 public:
    enum class Usage : GLenum {
       STREAM = GL_STREAM_DRAW,
@@ -146,6 +151,7 @@ public:
 
 class Shape {
 public:
+   virtual const Vertex* vertecies() const = 0;
    virtual unsigned int vertex_count() const = 0;
    virtual void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const = 0;
 };
@@ -154,8 +160,20 @@ class Triangle : public Shape {
 public:
    Vertex a, b, c;
 
+   Triangle();
    Triangle(Vertex, Vertex, Vertex);
 
+   const Vertex* vertecies() const override;
+   unsigned int vertex_count() const override;
+   void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const override;
+};
+
+class Square : public Shape {
+   Triangle a, b;
+public:
+   Square(Vertex, Vertex);
+
+   const Vertex* vertecies() const override;
    unsigned int vertex_count() const override;
    void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const override;
 };

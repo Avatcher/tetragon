@@ -16,6 +16,8 @@
 
 using spdlog::info, spdlog::debug, spdlog::warn, spdlog::error;
 
+void postpone_closing(tetragon::Window& window, int seconds);
+
 int main() {
    tetragon::init_logs();
 
@@ -38,16 +40,30 @@ int main() {
    using namespace tetragon;
 
    const Triangle triangle{
-      { -.5f, -.5f, .0f },
-      {  .5f, -.5f, .0f },
-      {  .0f,  .75f, .0f }
+      { -.5f, -.5f },
+      {  .5f, -.5f },
+      {  .0f,  .75f }
+   };
+   const Triangle triangleBravo{
+      { -.5f, -.6f },
+      {  .5f, -.6f },
+      {  .0f, -.8f }
+   };
+
+   const Square square{
+      { 0, .5 },
+      { .5, 0 }
    };
 
    VertexArray VAO;
    VAO.bind(); 
 
    VertexBuffer VBO;
-   VBO.buffer(triangle, VertexBuffer::Usage::STATIC);
+   VBO.bind();
+   const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
+   // VBO.buffer(triangle, usage);
+   // VBO.buffer(triangleBravo, usage);
+   VBO.buffer(square, VertexBuffer::Usage::STATIC);
 
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
@@ -62,13 +78,22 @@ int main() {
    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
    glEnableVertexAttribArray(0);
 
+   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   postpone_closing(window, 2);
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
    
       shaderProgram.bind();
       VAO.bind();
-      glDrawArrays(GL_TRIANGLES, 0, triangle.vertex_count());
+      
+      // glDrawArrays(GL_TRIANGLES, 0, 3);
+      // unsigned int verteciesCount = triangle.vertex_count()
+      //       + triangleBravo.vertex_count()
+      //       + square.vertex_count();
+      unsigned int verteciesCount = square.vertex_count();
+      glDrawArrays(GL_TRIANGLES, 0, verteciesCount);
+      // glDrawArrays(GL_TRIANGLES, 0, square.vertex_count());
 
       window.swap_buffers();
       glfwPollEvents();
@@ -76,4 +101,14 @@ int main() {
 
    glfwTerminate();
    return 0;
+}
+
+void postpone_closing(tetragon::Window& window, int seconds) {
+   std::thread t([&window, seconds]() {
+      spdlog::info("Posponing closing for {} seconds", seconds);
+      std::this_thread::sleep_for(std::chrono::seconds(seconds));
+      spdlog::info("Closing the application...");
+      window.set_should_close(true);
+   });
+   t.detach();
 }

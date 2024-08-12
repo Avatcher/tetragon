@@ -8,6 +8,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <vector>
 #include "graphics.hpp"
 #include "initializations.hpp"
 
@@ -190,10 +191,14 @@ namespace {
 
 VertexBuffer::VertexBuffer():
 	  m_object(create_vertex_buffer()) {
+	m_buffer = new byte[256];
+	m_ptr = m_buffer;
+	bind();
 }
 
 VertexBuffer::~VertexBuffer() {
-   glDeleteBuffers(1, &m_object);
+	glDeleteBuffers(1, &m_object);
+	delete m_buffer;
 }
 
 void VertexBuffer::bind() {
@@ -205,8 +210,15 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size) {
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
-   bind();
-   glBufferData(GL_ARRAY_BUFFER, size, ptr, (GLenum) usage);
+   	memcpy(m_ptr, ptr, size);
+   	m_ptr += size;
+   	m_size += size;
+   	bind();
+   	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
+
+	spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
+	std::vector<float> bufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
+	spdlog::debug(" Buffer: [ {:.1f} ]", fmt::join(bufferVector, ", "));
 }
 
 VertexArray::VertexArray():
@@ -241,8 +253,14 @@ void Vertex::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
 	buffer.buffer(&x, 3 * sizeof(float), usage);
 }
 
+Triangle::Triangle() {}
+
 Triangle::Triangle(Vertex a, Vertex b, Vertex c):
 		a(a), b(b), c(c) {
+}
+
+const Vertex* Triangle::vertecies() const {
+	return &a;
 }
 
 unsigned int Triangle::vertex_count() const {
@@ -254,5 +272,30 @@ void Triangle::buffer_to(VertexBuffer &buffer,
 	buffer.buffer(&a, 3 * sizeof(Vertex), usage);
 }
 
-} // tetragon
+/*
+  3   2
+  
+  1   4
+*/
+Square::Square(Vertex firstCorner, Vertex secondCorner) {
+	auto [maxX, minX] = std::minmax(firstCorner.x, secondCorner.x);
+	auto [maxY, minY] = std::minmax(firstCorner.y, secondCorner.y);
+	Vertex thirdCorner{ minX, maxY };
+	Vertex fourthCorner{ maxX, minY };
+	a = Triangle(firstCorner, thirdCorner, fourthCorner);
+	b = Triangle(secondCorner, thirdCorner, fourthCorner);
+}
 
+const Vertex* Square::vertecies() const {
+	return a.vertecies();
+}
+
+unsigned int Square::vertex_count() const {
+	return a.vertex_count() + b.vertex_count();
+}
+
+void Square::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
+	buffer.buffer(vertecies(), vertex_count() * sizeof(Vertex), usage);
+}
+
+} // namespace tetragon
