@@ -1,3 +1,10 @@
+
+# GLAD
+# https://glad.dav1d.de/
+include/glad/
+include/KHR/
+src/glad.c
+
 # Created by https://www.toptal.com/developers/gitignore/api/c++,vcpkg,cmake,visualstudiocode,visualstudio,clion
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,vcpkg,cmake,visualstudiocode,visualstudio,clion
 
