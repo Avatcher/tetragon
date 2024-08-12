@@ -42,21 +42,16 @@ int main() {
    };
 
    using Object = unsigned int;
-
-   Object VAO;
-   glGenVertexArrays(1, &VAO);
-   glBindVertexArray(VAO);
-
-   Object VBO;
-   glGenBuffers(1, &VBO);
-   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(vertecies), vertecies, GL_STATIC_DRAW);
-
    using namespace tetragon;
+
+   VertexArray VAO;
+   VAO.bind(); 
+
+   VertexBuffer VBO;
+   VBO.buffer(vertecies, sizeof(vertecies), VertexBuffer::Usage::STATIC);
 
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
-
    Shader vertexShader(ShaderType::VERTEX, vertexShaderSource);
    Shader fragmentShader(ShaderType::FRAGMENT, fragmentShaderSource);
    ShaderProgram shaderProgram = ShaderProgram::Builder()
@@ -67,14 +62,13 @@ int main() {
 
    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
    glEnableVertexAttribArray(0);
-   glBindVertexArray(VAO);
 
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
    
       shaderProgram.bind();
-      glBindVertexArray(VAO);
+      VAO.bind();
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
       window.swap_buffers();

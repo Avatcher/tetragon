@@ -9,6 +9,8 @@
 
 namespace tetragon {
 
+using Object = GLuint;
+
 namespace callbacks {
    void window_resize_callback(GLFWwindow* glfwWindow, int width, int height);
 } // callbacks
@@ -90,6 +92,36 @@ public:
       ShaderProgram::Builder& attach_shader(Shader const& shader);
       ShaderProgram build() const;
    };
+};
+
+class VertexAttribute {
+
+};
+
+class VertexBuffer {
+   const Object m_object;
+public:
+   enum class Usage : GLenum {
+      STREAM = GL_STREAM_DRAW,
+      STATIC = GL_STATIC_DRAW,
+      DYNAMIC = GL_DYNAMIC_DRAW
+   };
+
+   VertexBuffer();
+   virtual ~VertexBuffer();
+
+   void bind();
+   void buffer(const void* ptr, unsigned long size);
+   void buffer(const void* ptr, unsigned long size, Usage usage);
+};
+
+class VertexArray {
+   const Object m_object;
+public:
+   VertexArray();
+   virtual ~VertexArray();
+
+   void bind();
 };
 
 } // tetragon

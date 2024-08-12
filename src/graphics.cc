@@ -174,5 +174,52 @@ ShaderProgram ShaderProgram::Builder::build() const {
    return ShaderProgram(m_object);
 }
 
+namespace {
+   Object create_vertex_buffer() {
+      Object buffer;
+      glGenBuffers(1, &buffer);
+      return buffer;
+   }
+
+   Object create_vertex_array() {
+      Object array;
+      glGenVertexArrays(1, &array);
+      return array;
+   }
+}
+
+VertexBuffer::VertexBuffer():
+      m_object(create_vertex_buffer()) {
+}
+
+VertexBuffer::~VertexBuffer() {
+   glDeleteBuffers(1, &m_object);
+}
+
+void VertexBuffer::bind() {
+   glBindBuffer(GL_ARRAY_BUFFER, m_object);
+}
+
+void VertexBuffer::buffer(const void* ptr, unsigned long size) {
+   buffer(ptr, size, Usage::DYNAMIC);
+}
+
+void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
+   bind();
+   glBufferData(GL_ARRAY_BUFFER, size, ptr, (GLenum) usage);
+}
+
+VertexArray::VertexArray():
+      m_object(create_vertex_array()) {
+}
+
+VertexArray::~VertexArray() {
+   glDeleteVertexArrays(1, &m_object);
+}
+
+void VertexArray::bind() {
+   glBindVertexArray(m_object);
+}
+
 } // tetragon
 
