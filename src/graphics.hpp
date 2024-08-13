@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <type_traits>
 
 namespace tetragon {
 
@@ -14,6 +15,10 @@ using Object = GLuint;
 namespace callbacks {
    void window_resize_callback(GLFWwindow* glfwWindow, int width, int height);
 } // callbacks
+
+struct Textable {
+   virtual std::string to_string() const = 0;
+};
 
 class Window {
 private:
@@ -139,7 +144,7 @@ public:
    void bind();
 };
 
-class Vertex {
+class Vertex : public Textable {
 public:
    float x, y, z;
 
@@ -147,6 +152,8 @@ public:
    Vertex(std::initializer_list<float> values);
 
    void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const;
+   
+   std::string to_string() const override;
 };
 
 class Shape {
@@ -156,7 +163,7 @@ public:
    virtual void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const = 0;
 };
 
-class Triangle : public Shape {
+class Triangle : public Shape, public Textable {
 public:
    Vertex a, b, c;
 
@@ -166,9 +173,11 @@ public:
    const Vertex* vertecies() const override;
    unsigned int vertex_count() const override;
    void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const override;
+   
+   std::string to_string() const override;
 };
 
-class Square : public Shape {
+class Square : public Shape, public Textable {
    Triangle a, b;
 public:
    Square(Vertex, Vertex);
@@ -176,8 +185,18 @@ public:
    const Vertex* vertecies() const override;
    unsigned int vertex_count() const override;
    void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const override;
+
+   std::string to_string() const override;
 };
 
 } // tetragon
+
+template<class T>
+struct fmt::formatter<T, std::enable_if_t<std::is_base_of_v<tetragon::Textable, T>, char>>
+      : fmt::formatter<std::string> {
+	auto format(T const& value, fmt::format_context& ctx) const {
+      return formatter<std::string>::format(value.to_string(), ctx);
+	}
+};
 
 #endif // TETRAGON_APPLICATION_H

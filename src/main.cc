@@ -80,6 +80,10 @@ int main() {
 
    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    postpone_closing(window, 2);
+
+   spdlog::info("Foo: {}", Vertex{ 1, 2, 3 });
+   spdlog::info("Buffered shape: {}", square);
+
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
