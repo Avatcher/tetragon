@@ -59,7 +59,6 @@ int main() {
 
    VertexBuffer VBO;
    VBO.bind();
-   const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
 
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
@@ -77,12 +76,16 @@ int main() {
    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    postpone_closing(window, 2);
 
-   const Shape* shape = static_cast<const Shape*>(&square);
+   Vertex colorRed   = { 1, 0, 0 };
+   Vertex colorGreen = { 0, 1, 0 };
 
-   VBO.buffer(*shape, usage);
-   spdlog::warn("Shape vertecies: {}", shape->vertex_count());
-   spdlog::warn("Expected buffer size: {}", shape->vertex_count() * 3 * sizeof(float));
-   spdlog::warn("Actual buffer size: {}", VBO.size());
+   const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
+   VBO.buffer(triangle, usage);
+   // VBO.buffer(colorRed, usage);
+   VBO.buffer(triangleBravo, usage);
+   // VBO.buffer(colorGreen);
+
+   const unsigned int verteciesCount = VBO.size() / sizeof(Vertex);
 
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
@@ -90,8 +93,8 @@ int main() {
    
       shaderProgram.bind();
       VAO.bind();
-      
-      glDrawArrays(GL_TRIANGLES, 0, shape->vertex_count());
+
+      glDrawArrays(GL_TRIANGLES, 0, VBO.size() / (3 * sizeof(float)));
 
       window.swap_buffers();
       glfwPollEvents();

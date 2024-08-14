@@ -312,17 +312,4 @@ void Square::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
 	b.buffer_to(buffer, usage);
 }
 
-
-std::string Vertex::to_string() const {
-	return fmt::format("({} {} {})", x, y, z);
-}
-
-std::string Triangle::to_string() const {
-	return fmt::format("Triangle[{}, {}, {}]", a, b, c);
-}
-
-std::string Square::to_string() const {
-	return fmt::format("Square[{}, {}]", a, b);
-}
-
 } // namespace tetragon
