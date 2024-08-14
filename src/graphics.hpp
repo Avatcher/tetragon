@@ -133,6 +133,8 @@ public:
    void buffer(T const& data, Usage usage) {
       data.buffer_to(*this, usage);
    }
+
+   unsigned long size() const;
 };
 
 class VertexArray {

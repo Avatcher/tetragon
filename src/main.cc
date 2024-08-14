@@ -51,8 +51,8 @@ int main() {
    };
 
    const Square square{
-      { 0, .5 },
-      { .5, 0 }
+      { .5, .5 },
+      { -.5, -.5 }
    };
 
    VertexArray VAO;
@@ -84,6 +84,9 @@ int main() {
    const Shape* shape = static_cast<const Shape*>(&square);
 
    VBO.buffer(*shape, usage);
+   spdlog::warn("Shape vertecies: {}", shape->vertex_count());
+   spdlog::warn("Expected buffer size: {}", shape->vertex_count() * 3 * sizeof(float));
+   spdlog::warn("Actual buffer size: {}", VBO.size());
 
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);

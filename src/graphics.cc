@@ -228,6 +228,10 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
 	);
 }
 
+unsigned long VertexBuffer::size() const {
+	return m_size;
+}
+
 VertexArray::VertexArray():
 	  m_object(create_vertex_array()) {
 }
@@ -287,10 +291,12 @@ void Triangle::buffer_to(VertexBuffer &buffer,
 Square::Square(Vertex firstCorner, Vertex secondCorner) {
 	auto [maxX, minX] = std::minmax(firstCorner.x, secondCorner.x);
 	auto [maxY, minY] = std::minmax(firstCorner.y, secondCorner.y);
+	firstCorner = { minX, minY };
+	secondCorner = { maxX, maxY };
 	Vertex thirdCorner{ minX, maxY };
 	Vertex fourthCorner{ maxX, minY };
 	a = Triangle(firstCorner, thirdCorner, fourthCorner);
-	b = Triangle(secondCorner, thirdCorner, fourthCorner);
+	b = Triangle(secondCorner, fourthCorner, thirdCorner);
 }
 
 const Vertex* Square::vertecies() const {
