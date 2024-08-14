@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 #include <fmt/format.h>
+#include <fmt/color.h>
 #include <cstdio>
 #include <map>
 #include <iostream>
@@ -211,15 +212,20 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size) {
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
-   	memcpy(m_ptr, ptr, size);
+   	std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
+	std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
+
+	memcpy(m_ptr, ptr, size);
    	m_ptr += size;
    	m_size += size;
    	bind();
    	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 
 	spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
-	std::vector<float> bufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
-	spdlog::debug(" Buffer: [ {:.1f} ]", fmt::join(bufferVector, ", "));
+	spdlog::debug(" Buffer: [ {:.1f}, {} ]",
+		fmt::join(oldBufferVector, ", "),
+		fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
+	);
 }
 
 VertexArray::VertexArray():
@@ -249,8 +255,6 @@ Vertex::Vertex(std::initializer_list<float> values) {
 }
 
 void Vertex::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
-	spdlog::debug("Buffer size: {}", (3 * sizeof(float)));
-	spdlog::debug("  ( {} {} {} )", x, *(&x + 1), *(&x + 2));
 	buffer.buffer(&x, 3 * sizeof(float), usage);
 }
 
@@ -270,7 +274,9 @@ unsigned int Triangle::vertex_count() const {
 
 void Triangle::buffer_to(VertexBuffer &buffer,
 						 VertexBuffer::Usage usage) const {
-	buffer.buffer(&a, 3 * sizeof(Vertex), usage);
+	a.buffer_to(buffer, usage);
+	b.buffer_to(buffer, usage);
+	c.buffer_to(buffer, usage);
 }
 
 /*
@@ -296,7 +302,8 @@ unsigned int Square::vertex_count() const {
 }
 
 void Square::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
-	buffer.buffer(vertecies(), vertex_count() * sizeof(Vertex), usage);
+	a.buffer_to(buffer, usage);
+	b.buffer_to(buffer, usage);
 }
 
 

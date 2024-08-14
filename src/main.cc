@@ -63,7 +63,7 @@ int main() {
    const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
    // VBO.buffer(triangle, usage);
    // VBO.buffer(triangleBravo, usage);
-   VBO.buffer(square, VertexBuffer::Usage::STATIC);
+   // VBO.buffer(square, VertexBuffer::Usage::STATIC);
 
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
@@ -81,8 +81,9 @@ int main() {
    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    postpone_closing(window, 2);
 
-   spdlog::info("Foo: {}", Vertex{ 1, 2, 3 });
-   spdlog::info("Buffered shape: {}", square);
+   const Shape* shape = static_cast<const Shape*>(&square);
+
+   VBO.buffer(*shape, usage);
 
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
@@ -95,8 +96,7 @@ int main() {
       // unsigned int verteciesCount = triangle.vertex_count()
       //       + triangleBravo.vertex_count()
       //       + square.vertex_count();
-      unsigned int verteciesCount = square.vertex_count();
-      glDrawArrays(GL_TRIANGLES, 0, verteciesCount);
+      glDrawArrays(GL_TRIANGLES, 0, shape->vertex_count());
       // glDrawArrays(GL_TRIANGLES, 0, square.vertex_count());
 
       window.swap_buffers();
@@ -109,7 +109,7 @@ int main() {
 
 void postpone_closing(tetragon::Window& window, int seconds) {
    std::thread t([&window, seconds]() {
-      spdlog::info("Posponing closing for {} seconds", seconds);
+      spdlog::info("Postponing closing for {} seconds", seconds);
       std::this_thread::sleep_for(std::chrono::seconds(seconds));
       spdlog::info("Closing the application...");
       window.set_should_close(true);
