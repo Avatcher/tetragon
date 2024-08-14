@@ -49,7 +49,6 @@ int main() {
       {  .5f, -.6f },
       {  .0f, -.8f }
    };
-
    const Square square{
       { .5, .5 },
       { -.5, -.5 }
@@ -61,9 +60,6 @@ int main() {
    VertexBuffer VBO;
    VBO.bind();
    const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
-   // VBO.buffer(triangle, usage);
-   // VBO.buffer(triangleBravo, usage);
-   // VBO.buffer(square, VertexBuffer::Usage::STATIC);
 
    const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
    const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
@@ -95,12 +91,7 @@ int main() {
       shaderProgram.bind();
       VAO.bind();
       
-      // glDrawArrays(GL_TRIANGLES, 0, 3);
-      // unsigned int verteciesCount = triangle.vertex_count()
-      //       + triangleBravo.vertex_count()
-      //       + square.vertex_count();
       glDrawArrays(GL_TRIANGLES, 0, shape->vertex_count());
-      // glDrawArrays(GL_TRIANGLES, 0, square.vertex_count());
 
       window.swap_buffers();
       glfwPollEvents();
