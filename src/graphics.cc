@@ -214,6 +214,7 @@ VertexBuffer::VertexBuffer():
 	m_maxSize = 32;
 	m_buffer = new byte[m_maxSize];
 	m_ptr = m_buffer;
+	m_name = "Buffer";
 	bind();
 }
 
@@ -231,7 +232,7 @@ void VertexBuffer::ensure_capability(uint additionalSize, Usage usage) {
 	m_buffer = expandedBuffer;
 	m_ptr = m_buffer + m_size;
 	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
-	spdlog::info("Expanded buffer size: {} -> {}", m_maxSize / 2, m_maxSize);
+	spdlog::info("Expanded {} size: {} -> {}", m_name, m_maxSize / 2, m_maxSize);
 }
 
 void VertexBuffer::bind() {
@@ -250,6 +251,9 @@ void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
 	glVertexAttribPointer(layoutLocation, attribute.size(), attribute.type(),
 		attribute.normalized(), attribute.stride(), nullptr);
 	glEnableVertexAttribArray(layoutLocation);
+
+	m_name = fmt::format("Buffer({})",
+		fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size) {
@@ -268,7 +272,8 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
    	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 
 	// spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
-	spdlog::debug(" Buffer: [ {:.1f}, {} ]",
+	spdlog::debug(" {}: [ {:.1f}, {} ]",
+		m_name,
 		fmt::join(oldBufferVector, ", "),
 		fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
 	);

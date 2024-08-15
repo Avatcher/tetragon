@@ -143,6 +143,7 @@ class VertexBuffer {
    byte* m_ptr;
    uint m_size;
    uint m_maxSize;
+   std::string m_name;
 
 public:
    enum class Usage : GLenum {
