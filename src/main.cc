@@ -17,6 +17,7 @@
 using spdlog::info, spdlog::debug, spdlog::warn, spdlog::error;
 
 void postpone_closing(tetragon::Window& window, int seconds);
+tetragon::ShaderProgram create_shader_program();
 
 int main() {
    tetragon::init_logs();
@@ -57,36 +58,37 @@ int main() {
    VertexArray VAO;
    VAO.bind(); 
 
-   VertexBuffer VBO;
-   VBO.bind();
+   VertexBuffer vbo1, vbo2;
 
-   const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
-   const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
-   Shader vertexShader(ShaderType::VERTEX, vertexShaderSource);
-   Shader fragmentShader(ShaderType::FRAGMENT, fragmentShaderSource);
-   ShaderProgram shaderProgram = ShaderProgram::Builder()
-      .attach_shader(vertexShader)
-      .attach_shader(fragmentShader)
-      .build();
+   ShaderProgram shaderProgram = create_shader_program();
    shaderProgram.bind();
 
+   vbo1.bind();
    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
    glEnableVertexAttribArray(0);
 
-   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-   postpone_closing(window, 2);
+   vbo2.bind();
+   glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(Vertex), nullptr);
+   glEnableVertexAttribArray(1);
 
    Vertex colorRed   = { 1, 0, 0 };
    Vertex colorGreen = { 0, 1, 0 };
 
    const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
-   VBO.buffer(triangle, usage);
-   // VBO.buffer(colorRed, usage);
-   VBO.buffer(triangleBravo, usage);
-   // VBO.buffer(colorGreen);
+   vbo1.buffer(triangle, usage);
+   vbo1.buffer(triangleBravo, usage);
 
-   const unsigned int verteciesCount = VBO.size() / sizeof(Vertex);
+   for (int i = 0; i < triangle.vertex_count(); i++) {
+      vbo2.buffer(colorRed, usage);
+   }
+   for (int i = 0; i < triangleBravo.vertex_count(); i++) {
+      vbo2.buffer(colorGreen, usage);
+   }
 
+   const unsigned int verteciesCount = vbo1.size() / sizeof(Vertex);
+
+   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   postpone_closing(window, 2);
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
@@ -94,7 +96,7 @@ int main() {
       shaderProgram.bind();
       VAO.bind();
 
-      glDrawArrays(GL_TRIANGLES, 0, VBO.size() / (3 * sizeof(float)));
+      glDrawArrays(GL_TRIANGLES, 0, vbo1.size() / (3 * sizeof(float)));
 
       window.swap_buffers();
       glfwPollEvents();
@@ -112,4 +114,16 @@ void postpone_closing(tetragon::Window& window, int seconds) {
       window.set_should_close(true);
    });
    t.detach();
+}
+
+tetragon::ShaderProgram create_shader_program() {
+   using namespace tetragon;
+   const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
+   const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
+   Shader vertexShader(ShaderType::VERTEX, vertexShaderSource);
+   Shader fragmentShader(ShaderType::FRAGMENT, fragmentShaderSource);
+   return ShaderProgram::Builder()
+      .attach_shader(vertexShader)
+      .attach_shader(fragmentShader)
+      .build();
 }
