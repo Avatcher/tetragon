@@ -16,14 +16,14 @@ should this be considered a serious project with any purpose beside learning.
 vcpkg install
 ```
 
-1. Then run CMake and compile the project using Makefile:
+3. Then run CMake and compile the project using Makefile:
 ```sh
 mkdir build
 cd build
 cmake .. && make
 ```
 
-1. A single executable should be generated:
+4. A single executable should be generated:
 ```sh
 ./tetragon
 ```
