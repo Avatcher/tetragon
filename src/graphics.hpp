@@ -75,7 +75,43 @@ public:
    friend class ShaderProgram;
 };
 
+class VertexAttribute {
+   const char* const m_name;
+   const uint m_size;
+   const GLenum m_type;
+   const bool m_normalized;
+   const uint m_stride;
+
+public:
+   VertexAttribute(const char* name, uint size, GLenum type,
+         bool normalized, uint stride);
+
+   const char* name() const;
+   uint size() const;
+   GLenum type() const;
+   bool normalized() const;
+   uint stride() const;
+
+   class Builder {
+      const char* m_name;
+      uint m_size;
+      GLenum m_type;
+      bool m_normalized;
+      uint m_stride;
+   public:
+      Builder& set_name(const char* name);
+      Builder& set_size(uint size);
+      Builder& set_type(GLenum type);
+      Builder& set_normalized(bool normalized);
+      Builder& set_stride(uint stride);
+
+      VertexAttribute build();
+   };
+};
+
 class ShaderProgram {
+   static ShaderProgram* boundInstance;
+
    const GLuint m_object;
 
    ShaderProgram(GLuint program);
@@ -83,8 +119,11 @@ public:
    ShaderProgram(ShaderProgram const&) = delete;
    ~ShaderProgram();
 
+   static ShaderProgram* get_bound_instance();
+
    void bind();
-   GLuint get_attribute_location(const char* attribute) const;
+   bool is_bound() const;
+   uint get_attribute_location(VertexAttribute const& attribute) const;
 
    class Builder {
       GLuint m_object;
@@ -94,10 +133,6 @@ public:
       ShaderProgram::Builder& attach_shader(Shader const& shader);
       ShaderProgram build() const;
    };
-};
-
-class VertexAttribute {
-
 };
 
 class VertexBuffer {
@@ -118,6 +153,8 @@ public:
    virtual ~VertexBuffer();
 
    void bind();
+   void add_attribute(VertexAttribute const& attribute);
+
    void buffer(const void* ptr, unsigned long size);
    void buffer(const void* ptr, unsigned long size, Usage usage);
    

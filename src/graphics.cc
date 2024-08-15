@@ -148,15 +148,29 @@ ShaderProgram::ShaderProgram(GLuint program): m_object(program) {
 }
 
 ShaderProgram::~ShaderProgram() {
-   glDeleteProgram(m_object);
+	glDeleteProgram(m_object);
+	if (is_bound()) {
+		boundInstance = nullptr;
+	}
+}
+
+ShaderProgram* ShaderProgram::boundInstance = nullptr;
+
+ShaderProgram* ShaderProgram::get_bound_instance() {
+	return boundInstance;
 }
 
 void ShaderProgram::bind() {
    glUseProgram(m_object);
+   boundInstance = this;
 }
 
-GLuint ShaderProgram::get_attribute_location(const char* attribute) const {
-	return glGetAttribLocation(m_object, attribute);
+bool ShaderProgram::is_bound() const {
+	return boundInstance == this;
+}
+
+GLuint ShaderProgram::get_attribute_location(VertexAttribute const& attribute) const {
+	return glGetAttribLocation(m_object, attribute.name());
 }
 
 ShaderProgram::Builder::Builder() {
@@ -209,6 +223,20 @@ VertexBuffer::~VertexBuffer() {
 
 void VertexBuffer::bind() {
    glBindBuffer(GL_ARRAY_BUFFER, m_object);
+}
+
+void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
+	if (ShaderProgram::get_bound_instance() == nullptr) {
+		spdlog::error("Failed to add attribute `{}`, as no shader program is bound", attribute.name());
+		std::terminate();
+	}
+	ShaderProgram& shaderProgram = *ShaderProgram::get_bound_instance();
+	uint layoutLocation = shaderProgram.get_attribute_location(attribute);
+
+	bind();
+	glVertexAttribPointer(layoutLocation, attribute.size(), attribute.type(),
+		attribute.normalized(), attribute.stride(), nullptr);
+	glEnableVertexAttribArray(layoutLocation);
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size) {
@@ -314,6 +342,63 @@ unsigned int Square::vertex_count() const {
 void Square::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
 	a.buffer_to(buffer, usage);
 	b.buffer_to(buffer, usage);
+}
+
+VertexAttribute::VertexAttribute(const char* name, uint size, GLenum type,
+        bool normalized, uint stride):
+	m_name(name), m_size(size), m_type(type),
+	m_normalized(normalized), m_stride(stride) {
+}
+
+const char* VertexAttribute::name() const {
+	return m_name;
+}
+
+uint VertexAttribute::size() const {
+	return m_size;
+}
+
+GLenum VertexAttribute::type() const {
+	return m_type;
+}
+
+bool VertexAttribute::normalized() const {
+	return m_normalized;
+}
+
+uint VertexAttribute::stride() const {
+	return m_stride;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_name(const char* name) {
+	m_name = name;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_size(uint size) {
+	m_size = size;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_type(GLenum type) {
+	m_type = type;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_normalized(bool state) {
+	m_normalized = state;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_stride(uint size) {
+	m_stride = size;
+	return *this;
+}
+
+VertexAttribute VertexAttribute::Builder::build() {
+	return VertexAttribute (
+		m_name, m_size, m_type, m_normalized, m_stride
+	);
 }
 
 } // namespace tetragon

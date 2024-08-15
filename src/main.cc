@@ -63,15 +63,17 @@ int main() {
    ShaderProgram shaderProgram = create_shader_program();
    shaderProgram.bind();
 
-   vbo1.bind();
-   GLuint posLocation = shaderProgram.get_attribute_location("pos");
-   glVertexAttribPointer(posLocation, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
-   glEnableVertexAttribArray(0);
+   VertexAttribute::Builder vertexAttribBuilder = VertexAttribute::Builder()
+         .set_type(GL_FLOAT)
+         .set_size(3);
 
-   vbo2.bind();
-   GLuint colorLocation = shaderProgram.get_attribute_location("color");
-   glVertexAttribPointer(colorLocation, 3, GL_FLOAT, false, sizeof(Vertex), nullptr);
-   glEnableVertexAttribArray(1);
+   const VertexAttribute posAttrib =
+      vertexAttribBuilder.set_name("pos").build();
+   const VertexAttribute colorAttrib =
+      vertexAttribBuilder.set_name("color").build();
+
+   vbo1.add_attribute(posAttrib);
+   vbo2.add_attribute(colorAttrib);
 
    Vertex colorRed   = { 1, 0, 0 };
    Vertex colorGreen = { 0, 1, 0 };
