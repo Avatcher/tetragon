@@ -41,13 +41,13 @@ int main() {
    using namespace tetragon;
 
    const Triangle triangle{
-      { -.5f, -.5f },
-      {  .5f, -.5f },
+      { -.5f, -.25f },
+      {  .5f, -.25f },
       {  .0f,  .75f }
    };
    const Triangle triangleBravo{
-      { -.5f, -.6f },
-      {  .5f, -.6f },
+      { -.5f, -.25f },
+      {  .5f, -.25f },
       {  .0f, -.8f }
    };
    const Square square{
@@ -93,9 +93,7 @@ int main() {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
    
-      shaderProgram.bind();
       VAO.bind();
-
       glDrawArrays(GL_TRIANGLES, 0, vbo1.size() / (3 * sizeof(float)));
 
       window.swap_buffers();
