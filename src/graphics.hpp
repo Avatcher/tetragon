@@ -141,7 +141,9 @@ class VertexBuffer {
    const Object m_object;
    byte* m_buffer;
    byte* m_ptr;
-   unsigned int m_size;
+   uint m_size;
+   uint m_maxSize;
+
 public:
    enum class Usage : GLenum {
       STREAM = GL_STREAM_DRAW,
@@ -169,6 +171,9 @@ public:
    }
 
    unsigned long size() const;
+
+private:
+   void ensure_capability(uint additionalSize, Usage usage);
 };
 
 class VertexArray {

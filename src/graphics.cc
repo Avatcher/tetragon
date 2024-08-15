@@ -211,7 +211,8 @@ namespace {
 
 VertexBuffer::VertexBuffer():
 	  m_object(create_vertex_buffer()) {
-	m_buffer = new byte[256];
+	m_maxSize = 32;
+	m_buffer = new byte[m_maxSize];
 	m_ptr = m_buffer;
 	bind();
 }
@@ -219,6 +220,18 @@ VertexBuffer::VertexBuffer():
 VertexBuffer::~VertexBuffer() {
 	glDeleteBuffers(1, &m_object);
 	delete m_buffer;
+}
+
+void VertexBuffer::ensure_capability(uint additionalSize, Usage usage) {
+	if (m_size + additionalSize < m_maxSize) return;
+	m_maxSize *= 2;
+	byte* expandedBuffer = new byte[m_maxSize];
+	memcpy(expandedBuffer, m_buffer, m_size);
+	delete m_buffer;
+	m_buffer = expandedBuffer;
+	m_ptr = m_buffer + m_size;
+	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
+	spdlog::info("Expanded buffer size: {} -> {}", m_maxSize / 2, m_maxSize);
 }
 
 void VertexBuffer::bind() {
@@ -247,13 +260,14 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
    	std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
 	std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
+	ensure_capability(size, usage);
 	memcpy(m_ptr, ptr, size);
    	m_ptr += size;
    	m_size += size;
    	bind();
    	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 
-	spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
+	// spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
 	spdlog::debug(" Buffer: [ {:.1f}, {} ]",
 		fmt::join(oldBufferVector, ", "),
 		fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
