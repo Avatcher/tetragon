@@ -84,6 +84,7 @@ public:
    ~ShaderProgram();
 
    void bind();
+   GLuint get_attribute_location(const char* attribute) const;
 
    class Builder {
       GLuint m_object;

@@ -155,6 +155,10 @@ void ShaderProgram::bind() {
    glUseProgram(m_object);
 }
 
+GLuint ShaderProgram::get_attribute_location(const char* attribute) const {
+	return glGetAttribLocation(m_object, attribute);
+}
+
 ShaderProgram::Builder::Builder() {
    m_object = glCreateProgram();
 }
