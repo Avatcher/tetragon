@@ -82,12 +82,12 @@ int main() {
    vbo1.buffer(triangle, usage);
    vbo1.buffer(triangleBravo, usage);
 
-   for (int i = 0; i < triangle.vertex_count(); i++) {
-      vbo2.buffer(colorRed, usage);
-   }
-   for (int i = 0; i < triangleBravo.vertex_count(); i++) {
-      vbo2.buffer(colorGreen, usage);
-   }
+   vbo2.buffer(Vertex{ 1, 0, 0 }, usage);
+   vbo2.buffer(Vertex{ 1, 1, 0 }, usage);
+   vbo2.buffer(Vertex{ 1, 1, 1 }, usage);
+   vbo2.buffer(Vertex{ 0, 1, 0 }, usage);
+   vbo2.buffer(Vertex{ 0, 1, 1 }, usage);
+   vbo2.buffer(Vertex{ 1, 1, 1 }, usage);
 
    const unsigned int verteciesCount = vbo1.size() / sizeof(Vertex);
 
