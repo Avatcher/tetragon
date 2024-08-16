@@ -64,7 +64,7 @@ enum class ShaderType {
 
 class Shader {
    const ShaderType m_type;
-   const GLuint m_object;
+   const Object m_object;
 public:
    Shader(ShaderType type, const char* source);
    Shader(Shader const&) = delete;
@@ -112,9 +112,9 @@ public:
 class ShaderProgram {
    static ShaderProgram* boundInstance;
 
-   const GLuint m_object;
+   const Object m_object;
 
-   ShaderProgram(GLuint program);
+   ShaderProgram(Object program);
 public:
    ShaderProgram(ShaderProgram const&) = delete;
    ~ShaderProgram();
@@ -126,7 +126,7 @@ public:
    uint get_attribute_location(VertexAttribute const& attribute) const;
 
    class Builder {
-      GLuint m_object;
+      Object m_object;
    public:
       Builder();
 
