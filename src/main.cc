@@ -18,6 +18,7 @@ using spdlog::info, spdlog::debug, spdlog::warn, spdlog::error;
 
 void postpone_closing(tetragon::Window& window, int seconds);
 tetragon::ShaderProgram create_shader_program();
+void update_uniforms(tetragon::ShaderProgram& shaderProgram);
 
 int main() {
    tetragon::init_logs();
@@ -92,11 +93,13 @@ int main() {
    const unsigned int verteciesCount = vbo1.size() / sizeof(Vertex);
 
    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-   postpone_closing(window, 2);
+   // postpone_closing(window, 2);
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
    
+      update_uniforms(shaderProgram);
+
       VAO.bind();
       glDrawArrays(GL_TRIANGLES, 0, vbo1.size() / (3 * sizeof(float)));
 
@@ -128,4 +131,14 @@ tetragon::ShaderProgram create_shader_program() {
       .attach_shader(vertexShader)
       .attach_shader(fragmentShader)
       .build();
+}
+
+void update_uniforms(tetragon::ShaderProgram& shaderProgram) {
+   float time = glfwGetTime();
+   float greenValue = fabs(sin(time));
+
+   const char* uniformName = "globalGreen";
+   int uniformLocation = glGetUniformLocation(shaderProgram.get_object_id(), uniformName);
+   shaderProgram.bind();
+   glUniform1f(uniformLocation, greenValue);
 }

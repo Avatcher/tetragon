@@ -174,6 +174,15 @@ GLuint ShaderProgram::get_attribute_location(VertexAttribute const& attribute) c
 	return glGetAttribLocation(m_object, attribute.name());
 }
 
+Object ShaderProgram::get_object_id() const {
+	static bool warningPrinted = false;
+	if (!warningPrinted) {
+		spdlog::warn("Usage of ShaderProgram::get_object_id is not recommended");
+		warningPrinted = true;
+	}
+	return m_object;
+}
+
 ShaderProgram::Builder::Builder() {
    m_object = glCreateProgram();
 }

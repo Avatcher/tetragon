@@ -125,6 +125,8 @@ public:
    bool is_bound() const;
    uint get_attribute_location(VertexAttribute const& attribute) const;
 
+   Object get_object_id() const;
+
    class Builder {
       Object m_object;
    public:
