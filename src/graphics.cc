@@ -51,6 +51,19 @@ Shader::~Shader() {
 }
 
 template<>
+void Uniform<double>::set_value(double const& value) {
+	program().bind();
+	glUniform1d(location(), value);
+}
+
+template<>
+double Uniform<double>::value() const {
+	double value;
+	glGetUniformdv(program().m_object, location(), &value);
+	return value;
+}
+
+template<>
 void Uniform<float>::set_value(float const& value) {
 	program().bind();
 	glUniform1f(location(), value);
@@ -60,6 +73,32 @@ template<>
 float Uniform<float>::value() const {
 	float value;
 	glGetUniformfv(program().m_object, location(), &value);
+	return value;
+}
+
+template<>
+void Uniform<int>::set_value(int const& value) {
+	bind_program();
+	glUniform1i(location(), value);
+}
+
+template<>
+int Uniform<int>::value() const {
+	int value;
+	glGetUniformiv(program().m_object, location(), &value);
+	return value;
+}
+
+template<>
+void Uniform<uint>::set_value(uint const& value) {
+	bind_program();
+	glUniform1ui(location(), value);
+}
+
+template<>
+uint Uniform<uint>::value() const {
+	uint value;
+	glGetUniformuiv(program().m_object, location(), &value);
 	return value;
 }
 

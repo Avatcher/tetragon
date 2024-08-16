@@ -70,7 +70,10 @@ class Vertex;
 template<class T>
 struct is_uniformable : std::bool_constant<false> {};
 
+template<> struct is_uniformable<double> : std::bool_constant<true> {};
 template<> struct is_uniformable<float> : std::bool_constant<true> {};
+template<> struct is_uniformable<int> : std::bool_constant<true> {};
+template<> struct is_uniformable<uint> : std::bool_constant<true> {};
 template<> struct is_uniformable<Vertex> : std::bool_constant<true> {};
 
 template<class T>
@@ -94,8 +97,13 @@ public:
 	void set_value(T const& value);
 	T value() const;
 
+
 	ShaderProgram& program() const {
 		return m_program;
+	}
+
+	void bind_program() const {
+		program().bind();
 	}
 
 	const char* name() const {
