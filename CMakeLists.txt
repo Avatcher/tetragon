@@ -34,9 +34,10 @@ add_executable(${PROJECT_NAME}
 target_inject_resources(${PROJECT_NAME} resources.hpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(${PROJECT_NAME} PRIVATE ${BUILT_DIR})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glad::glad)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+target_link_libraries(${PROJECT_NAME}
+   PRIVATE glad::glad
+   PRIVATE OpenGL::GL
+   PRIVATE glfw
+   PRIVATE spdlog::spdlog
+)
