@@ -103,9 +103,6 @@ int main() {
       glClear(GL_COLOR_BUFFER_BIT);
    
       update_uniforms(u_green, u_offset);
-      spdlog::debug("u_green == {}", u_green.value());
-      spdlog::debug("u_offset == ({:.2f} {:.2f} {:.2f})",
-         u_offset.value().x, u_offset.value().y, u_offset.value().z);
 
       VAO.bind();
       glDrawArrays(GL_TRIANGLES, 0, vbo1.size() / (3 * sizeof(float)));
