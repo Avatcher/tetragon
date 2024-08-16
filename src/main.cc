@@ -6,8 +6,9 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
-#include "graphics.hpp"
 #include "initializations.hpp"
+#include "application.hpp"
+#include "graphics.hpp"
 #include "resources.hpp"
 
 #define WINDOW_NAME "Tetragon"

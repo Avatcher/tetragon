@@ -24,6 +24,7 @@ find_package(spdlog 1.9.2 REQUIRED)
 set(SOURCES
    src/initializations.cc
    src/graphics.cc
+   src/application.cc
 )
 
 add_executable(${PROJECT_NAME}
