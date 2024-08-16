@@ -18,36 +18,36 @@
 namespace tetragon {
 
 namespace {
-   int convert_shader_type(ShaderType type) {
-	  switch (type) {
-		 case ShaderType::VERTEX: return GL_VERTEX_SHADER;
-		 case ShaderType::FRAGMENT: return GL_FRAGMENT_SHADER;
-	  }
-	  throw std::runtime_error("Unexpected shader type");
-   }
+	int convert_shader_type(ShaderType type) {
+		switch (type) {
+			case ShaderType::VERTEX: return GL_VERTEX_SHADER;
+			case ShaderType::FRAGMENT: return GL_FRAGMENT_SHADER;
+		}
+		throw std::runtime_error("Unexpected shader type");
+	}
 
-   GLuint create_shader(ShaderType type, const char* source) {
-	  GLuint shader = glCreateShader(convert_shader_type(type));
-	  glShaderSource(shader, 1, &source, nullptr);
-	  glCompileShader(shader);
-	  int success;
-	  char message[512];
-	  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	  if (!success) {
-		 glGetShaderInfoLog(shader,512, nullptr, message);
-		 spdlog::error("Failed to build a shader: {}", message);
-		 throw std::runtime_error(message);
-	  }
-	  return shader;
-   }
+	GLuint create_shader(ShaderType type, const char* source) {
+		GLuint shader = glCreateShader(convert_shader_type(type));
+		glShaderSource(shader, 1, &source, nullptr);
+		glCompileShader(shader);
+		int success;
+		char message[512];
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(shader,512, nullptr, message);
+			spdlog::error("Failed to build a shader: {}", message);
+			throw std::runtime_error(message);
+		}
+		return shader;
+	}
 }
 
 Shader::Shader(ShaderType type, const char* source):
-	  m_type(type), m_object(create_shader(type, source)) {
+		m_type(type), m_object(create_shader(type, source)) {
 }
 
 Shader::~Shader() {
-   glDeleteShader(m_object);
+	glDeleteShader(m_object);
 }
 
 template<>
@@ -77,7 +77,7 @@ Vertex Uniform<Vertex>::value() const {
 }
 
 ShaderType Shader::get_type() const {
-   return m_type;
+	return m_type;
 }
 
 ShaderProgram::ShaderProgram(GLuint program): m_object(program) {
@@ -97,8 +97,8 @@ ShaderProgram* ShaderProgram::get_bound_instance() {
 }
 
 void ShaderProgram::bind() {
-   glUseProgram(m_object);
-   boundInstance = this;
+	glUseProgram(m_object);
+	boundInstance = this;
 }
 
 bool ShaderProgram::is_bound() const {
@@ -110,43 +110,43 @@ GLuint ShaderProgram::get_attribute_location(VertexAttribute const& attribute) c
 }
 
 ShaderProgram::Builder::Builder() {
-   m_object = glCreateProgram();
+	m_object = glCreateProgram();
 }
 
 ShaderProgram::Builder& ShaderProgram::Builder::attach_shader(Shader const& shader) {
-   glAttachShader(m_object, shader.m_object);
-   return *this;
+	glAttachShader(m_object, shader.m_object);
+	return *this;
 }
 
 ShaderProgram ShaderProgram::Builder::build() const {
-   glLinkProgram(m_object);
-   int success;
-   char message[512];
-   glGetProgramiv(m_object, GL_LINK_STATUS, &success);
-   if (!success) {
-	  glGetProgramInfoLog(m_object, 512, nullptr, message);
-	  spdlog::error("Failed to link a shader program: {}", message);
-	  throw std::runtime_error(message);
-   }
-   return ShaderProgram(m_object);
+	glLinkProgram(m_object);
+	int success;
+	char message[512];
+	glGetProgramiv(m_object, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(m_object, 512, nullptr, message);
+		spdlog::error("Failed to link a shader program: {}", message);
+		throw std::runtime_error(message);
+	}
+	return ShaderProgram(m_object);
 }
 
 namespace {
-   Object create_vertex_buffer() {
-	  Object buffer;
-	  glGenBuffers(1, &buffer);
-	  return buffer;
-   }
+	Object create_vertex_buffer() {
+		Object buffer;
+		glGenBuffers(1, &buffer);
+		return buffer;
+	}
 
-   Object create_vertex_array() {
-	  Object array;
-	  glGenVertexArrays(1, &array);
-	  return array;
-   }
+	Object create_vertex_array() {
+		Object array;
+		glGenVertexArrays(1, &array);
+		return array;
+	}
 }
 
 VertexBuffer::VertexBuffer():
-	  m_object(create_vertex_buffer()) {
+		m_object(create_vertex_buffer()) {
 	m_maxSize = 32;
 	m_buffer = new byte[m_maxSize];
 	m_ptr = m_buffer;
@@ -172,7 +172,7 @@ void VertexBuffer::ensure_capability(uint additionalSize, Usage usage) {
 }
 
 void VertexBuffer::bind() {
-   glBindBuffer(GL_ARRAY_BUFFER, m_object);
+	glBindBuffer(GL_ARRAY_BUFFER, m_object);
 }
 
 void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
@@ -189,23 +189,23 @@ void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
 	glEnableVertexAttribArray(layoutLocation);
 
 	m_name = fmt::format("Buffer({})",
-		fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
+	fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size) {
-   buffer(ptr, size, Usage::DYNAMIC);
+	buffer(ptr, size, Usage::DYNAMIC);
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
-   	std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
+		std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
 	std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
 	ensure_capability(size, usage);
 	memcpy(m_ptr, ptr, size);
-   	m_ptr += size;
-   	m_size += size;
-   	bind();
-   	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
+	m_ptr += size;
+	m_size += size;
+	bind();
+	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 
 	// spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
 	spdlog::debug(" {}: [ {:.1f}, {} ]",
@@ -220,29 +220,29 @@ unsigned long VertexBuffer::size() const {
 }
 
 VertexArray::VertexArray():
-	  m_object(create_vertex_array()) {
+		m_object(create_vertex_array()) {
 }
 
 VertexArray::~VertexArray() {
-   glDeleteVertexArrays(1, &m_object);
+	glDeleteVertexArrays(1, &m_object);
 }
 
 void VertexArray::bind() {
-   glBindVertexArray(m_object);
+	glBindVertexArray(m_object);
 }
 
 Vertex::Vertex() {}
 
 Vertex::Vertex(std::initializer_list<float> values) {
-  if (values.size() >= 3) {
-	z = *(values.begin() + 2);
-  }
-  if (values.size() >= 2) {
-	y = *(values.begin() + 1);
-  }
-  if (values.size() >= 1) {
-	x = *(values.begin());
-  }
+	if (values.size() >= 3) {
+		z = *(values.begin() + 2);
+	}
+	if (values.size() >= 2) {
+		y = *(values.begin() + 1);
+	}
+	if (values.size() >= 1) {
+		x = *(values.begin());
+	}
 }
 
 void Vertex::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
@@ -264,16 +264,16 @@ unsigned int Triangle::vertex_count() const {
 }
 
 void Triangle::buffer_to(VertexBuffer &buffer,
-						 VertexBuffer::Usage usage) const {
+							VertexBuffer::Usage usage) const {
 	a.buffer_to(buffer, usage);
 	b.buffer_to(buffer, usage);
 	c.buffer_to(buffer, usage);
 }
 
 /*
-  3   2
-  
-  1   4
+	3	2
+	
+	1	4
 */
 Square::Square(Vertex firstCorner, Vertex secondCorner) {
 	auto [maxX, minX] = std::minmax(firstCorner.x, secondCorner.x);
@@ -300,7 +300,7 @@ void Square::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
 }
 
 VertexAttribute::VertexAttribute(const char* name, uint size, GLenum type,
-        bool normalized, uint stride):
+			bool normalized, uint stride):
 	m_name(name), m_size(size), m_type(type),
 	m_normalized(normalized), m_stride(stride) {
 }
