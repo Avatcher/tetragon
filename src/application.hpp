@@ -2,6 +2,10 @@
 #define TETRAGON_APPLICATION_HPP
 
 #include <GLFW/glfw3.h>
+#include <functional>
+#include <mutex>
+#include <list>
+#include <map>
 
 namespace tetragon {
 
@@ -35,6 +39,8 @@ public:
 	bool should_close() const;
 	void set_should_close(bool state);
 
+	int get_key(int key) const;
+
 	friend void callbacks::window_resize_callback(GLFWwindow* glfwWindow, int width, int heigh);
 	friend class WindowManager;
 };
@@ -49,6 +55,45 @@ public:
 	virtual void remove_window(Window* window) = 0;
 
 	virtual Window* get_window(GLFWwindow* window) const = 0;
+};
+
+class Controls {
+public:
+	using Key = int;
+	using BindingPredicate = std::function<bool(Window&)>;
+	using BindingFn = std::function<void(Window&)>;
+	class Binding;
+
+private:
+	Window& m_window;
+	std::list<Binding> m_bindings;
+	mutable std::mutex m_processMutex;
+
+public:
+	Controls(Window& window);
+
+	Controls& add_binding(Key key, BindingFn const& fn);
+	Controls& add_binding(std::initializer_list<Key> keys, BindingFn const& fn);
+
+	Controls& remove_binding(Binding const& binding);
+
+	void process() const;
+
+	Window& window() const;
+
+	class Binding {
+		Controls& m_controls;
+		BindingPredicate m_predicate;
+		BindingFn m_function;
+	
+	public:
+		Binding(Controls& controls, BindingPredicate const& predicate, BindingFn const& fn);
+
+		bool is_triggered() const;
+		void execute() const;
+
+		bool operator==(Binding const& other) const;
+	};
 };
 
 } // tetragon

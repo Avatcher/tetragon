@@ -71,6 +71,10 @@ void Window::set_should_close(bool state) {
 	glfwSetWindowShouldClose(m_window, state);
 }
 
+int Window::get_key(int key) const {
+	return glfwGetKey(m_window, key);
+}
+
 namespace {
 	class DefaultWindowManager : public WindowManager {
 		std::map<GLFWwindow*, Window*> m_windows;
@@ -93,6 +97,66 @@ WindowManager* const WindowManager::INSTANCE = &windowManager;
 
 GLFWwindow* WindowManager::get_glfw_window(Window* window) {
 	return window->m_window;
+}
+
+namespace {
+	class MultikeyBindingPredicate {
+		const std::vector<Controls::Key> m_keys;
+
+	public:
+		MultikeyBindingPredicate(std::initializer_list<Controls::Key> keys):
+				m_keys(keys) {}
+
+		bool operator()(Window& window) const {
+			for (Controls::Key key : m_keys) {
+				if (window.get_key(key) != GLFW_PRESS) return false;
+			}
+			return true;
+		} 
+	};
+}
+
+Controls::Controls(Window& window):
+		m_window(window) {}
+
+Controls& Controls::add_binding(Key key, BindingFn const& fn) {
+	return add_binding({ key }, fn);
+}
+
+Controls& Controls::add_binding(std::initializer_list<Key> keys, BindingFn const& fn) {
+	m_bindings.emplace_back(Binding { *this, MultikeyBindingPredicate(keys), fn });
+	return *this;
+}
+
+Controls& Controls::remove_binding(Binding const& binding) {
+	m_bindings.remove(binding);
+	return *this;
+}
+
+void Controls::process() const {
+	std::lock_guard lock(m_processMutex);
+	for (Binding const& binding : m_bindings) {
+		if (binding.is_triggered()) binding.execute();
+	}
+}
+
+Window& Controls::window() const {
+	return m_window;
+}
+
+Controls::Binding::Binding(Controls& controls, BindingPredicate const& predicate, BindingFn const& fn):
+	m_controls(controls), m_predicate(predicate), m_function(fn) {}
+
+bool Controls::Binding::is_triggered() const {
+	return m_predicate(m_controls.m_window);
+}
+
+void Controls::Binding::execute() const {
+	m_function(m_controls.m_window);
+}
+
+bool Controls::Binding::operator==(Controls::Binding const& other) const {
+	return this == &other;
 }
 
 } // tetragon

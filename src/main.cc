@@ -6,6 +6,7 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
+#include <fmt/color.h>
 #include "initializations.hpp"
 #include "application.hpp"
 #include "graphics.hpp"
@@ -41,7 +42,15 @@ int main() {
 	} window;
 	window.make_context();
 
-	using namespace tetragon;
+	Controls controls(window);
+	controls.add_binding(GLFW_KEY_SPACE, [](Window& window) {
+		spdlog::info("Press {} to exit application",
+			fmt::format(fmt::fg(fmt::color::magenta), "SHIFT + SPACE"));
+	});
+	controls.add_binding({ GLFW_KEY_LEFT_SHIFT, GLFW_KEY_SPACE }, [](Window& window) {
+		spdlog::info("Exit hotkey pressed, closing the application...");
+		window.set_should_close(true);
+	});
 
 	const Triangle triangle{
 		{ -.5f, -.25f },
@@ -102,7 +111,8 @@ int main() {
 	while (!window.should_close()) {
 		glClearColor(.3f, .3f, .5f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
-	
+
+		controls.process();
 		update_uniforms(u_green, u_offset);
 
 		VAO.bind();
