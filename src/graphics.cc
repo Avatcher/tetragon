@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <fmt/format.h>
 #include <fmt/color.h>
+#include <fmt/ranges.h>
 #include <cstdio>
 #include <map>
 #include <iostream>
