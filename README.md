@@ -37,5 +37,5 @@ cmake -DNO_LOG_EMOJIS=ON .. && make
 ### Normal:
 ![Screenshot of log message emojis](.github/images/screenshot_emojis.png)
 
-### `-DNO_EMOJIS=ON`
+### No emojis:
 ![Screenshot of log messages without emojis](.github/images/screenshot_no_emojis.png)
