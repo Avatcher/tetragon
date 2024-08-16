@@ -11,6 +11,11 @@ include(injecto.cmake)
 
 set(CXX_STANDARD 20)
 
+option(NO_LOG_EMOJIS "" OFF)
+if(NO_LOG_EMOJIS)
+   add_compile_definitions(TETRAGON_NO_LOG_EMOJIS)
+endif()
+
 find_package(glad 0.1.36 REQUIRED)
 find_package(OpenGL 3.3 REQUIRED)
 find_package(glfw3 3.3 REQUIRED)

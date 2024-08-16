@@ -5,6 +5,12 @@
 #include <map>
 #include "initializations.hpp"
 
+#ifndef TETRAGON_NO_LOG_EMOJIS
+#	define TETRAGON_LOG_PATTERN "[%H:%M:%S.%e] (t%t) %^%E %G%$ : %v"
+#else
+#	define TETRAGON_LOG_PATTERN "[%H:%M:%S.%e] (t%t) %^%G%$ : %v"
+#endif
+
 class LogLevelEmojiFlag : public spdlog::custom_flag_formatter {
 	static const std::map<spdlog::level::level_enum, std::string> emojis;
 public:
@@ -50,7 +56,7 @@ void tetragon::init_logs() {
 	auto formatter = std::make_unique<spdlog::pattern_formatter>();
 	formatter->add_flag<LogLevelEmojiFlag>('E')
 		.add_flag<ShortLevelFlag>('G')
-		.set_pattern("[%H:%M:%S.%e] (t%t) %^%E %G%$ : %v");
+		.set_pattern(TETRAGON_LOG_PATTERN);
 	spdlog::set_formatter(std::move(formatter));
 	spdlog::set_level(spdlog::level::debug);
 }
