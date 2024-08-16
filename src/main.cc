@@ -14,11 +14,12 @@
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 400
 
+using namespace tetragon;
 using spdlog::info, spdlog::debug, spdlog::warn, spdlog::error;
 
 void postpone_closing(tetragon::Window& window, int seconds);
 tetragon::ShaderProgram create_shader_program();
-void update_uniforms(tetragon::ShaderProgram& shaderProgram);
+void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset);
 
 int main() {
    tetragon::init_logs();
@@ -92,13 +93,19 @@ int main() {
 
    const unsigned int verteciesCount = vbo1.size() / sizeof(Vertex);
 
+   auto u_green = shaderProgram.uniform<float>("u_green");
+   auto u_offset = shaderProgram.uniform<Vertex>("u_offset");
+
    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    // postpone_closing(window, 2);
    while (!window.should_close()) {
       glClearColor(.3f, .3f, .5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
    
-      update_uniforms(shaderProgram);
+      update_uniforms(u_green, u_offset);
+      spdlog::debug("u_green == {}", u_green.value());
+      spdlog::debug("u_offset == ({:.2f} {:.2f} {:.2f})",
+         u_offset.value().x, u_offset.value().y, u_offset.value().z);
 
       VAO.bind();
       glDrawArrays(GL_TRIANGLES, 0, vbo1.size() / (3 * sizeof(float)));
@@ -133,12 +140,13 @@ tetragon::ShaderProgram create_shader_program() {
       .build();
 }
 
-void update_uniforms(tetragon::ShaderProgram& shaderProgram) {
+void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset) {
    float time = glfwGetTime();
-   float greenValue = fabs(sin(time));
+   float timeSin = sin(time);
+   float greenValue = fabs(timeSin);
+   u_green.set_value(greenValue);
 
-   const char* uniformName = "globalGreen";
-   int uniformLocation = glGetUniformLocation(shaderProgram.get_object_id(), uniformName);
-   shaderProgram.bind();
-   glUniform1f(uniformLocation, greenValue);
+   float length = .5f;
+   Vertex offset{ length * (1.f - timeSin) - length, 0, 0 };
+   u_offset.set_value(offset);
 }

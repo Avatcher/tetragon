@@ -141,6 +141,32 @@ Shader::~Shader() {
    glDeleteShader(m_object);
 }
 
+template<>
+void Uniform<float>::set_value(float const& value) {
+	program().bind();
+	glUniform1f(location(), value);
+}
+
+template<>
+float Uniform<float>::value() const {
+	float value;
+	glGetUniformfv(program().m_object, location(), &value);
+	return value;
+}
+
+template<>
+void Uniform<Vertex>::set_value(Vertex const& value) {
+	program().bind();
+	glUniform3f(location(), value.x, value.y, value.z);
+}
+
+template<>
+Vertex Uniform<Vertex>::value() const {
+	float x, y, z;
+	glGetUniformfv(program().m_object, location(), &x);
+	return Vertex { x, y, z }; 
+}
+
 ShaderType Shader::get_type() const {
    return m_type;
 }
@@ -172,15 +198,6 @@ bool ShaderProgram::is_bound() const {
 
 GLuint ShaderProgram::get_attribute_location(VertexAttribute const& attribute) const {
 	return glGetAttribLocation(m_object, attribute.name());
-}
-
-Object ShaderProgram::get_object_id() const {
-	static bool warningPrinted = false;
-	if (!warningPrinted) {
-		spdlog::warn("Usage of ShaderProgram::get_object_id is not recommended");
-		warningPrinted = true;
-	}
-	return m_object;
 }
 
 ShaderProgram::Builder::Builder() {

@@ -7,6 +7,7 @@
 #include <mutex>
 #include <vector>
 #include <type_traits>
+#include <concepts>
 
 namespace tetragon {
 
@@ -109,6 +110,53 @@ public:
    };
 };
 
+class ShaderProgram;
+class Vertex;
+
+template<class T>
+struct is_uniformable : std::bool_constant<false> {};
+
+template<> struct is_uniformable<float> : std::bool_constant<true> {};
+template<> struct is_uniformable<Vertex> : std::bool_constant<true> {};
+
+template<class T>
+concept IsUniformable = is_uniformable<T>::value;
+
+template<IsUniformable T>
+class Uniform {
+   ShaderProgram& m_program;
+   const char* m_name;
+   int m_location;
+
+public:
+   Uniform(ShaderProgram& program, const char* name, int location):
+         m_program(program), m_name(name), m_location(location) {
+   }
+
+   Uniform(Uniform const& other):
+         Uniform(other.m_program, other.m_name, other.m_location) {
+   }
+
+   void set_value(T const& value);
+   T value() const;
+
+   ShaderProgram& program() const {
+      return m_program;
+   }
+
+   const char* name() const {
+      return m_name;
+   }
+
+   int location() const {
+      return m_location;
+   }
+
+   Uniform<T> operator=(Uniform<T> const& other) {
+      *this = other;
+   }
+};
+
 class ShaderProgram {
    static ShaderProgram* boundInstance;
 
@@ -125,7 +173,15 @@ public:
    bool is_bound() const;
    uint get_attribute_location(VertexAttribute const& attribute) const;
 
-   Object get_object_id() const;
+   template<IsUniformable T>
+   Uniform<T> uniform(const char* name) {
+      int location = glGetUniformLocation(m_object, name);
+      if (location < 0) {
+         spdlog::error("Could not find uniform with name `{}`", name);
+         std::terminate();
+      }
+      return Uniform<T>(*this, name, location);
+   }
 
    class Builder {
       Object m_object;
@@ -135,6 +191,9 @@ public:
       ShaderProgram::Builder& attach_shader(Shader const& shader);
       ShaderProgram build() const;
    };
+
+   template<IsUniformable T>
+   friend class Uniform;
 };
 
 class VertexBuffer {
