@@ -9,7 +9,7 @@
 #include <fmt/color.h>
 #include <tetragon/initializations.hpp>
 #include <tetragon/applications.hpp>
-#include "graphics.hpp"
+#include <tetragon/graphics.hpp>
 #include "resources.hpp"
 
 #define WINDOW_NAME "Tetragon"
