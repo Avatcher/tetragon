@@ -65,7 +65,7 @@ double Uniform<double>::value() const {
 
 template<>
 void Uniform<float>::set_value(float const& value) {
-	program().bind();
+	bind_program();
 	glUniform1f(location(), value);
 }
 
@@ -104,7 +104,7 @@ uint Uniform<uint>::value() const {
 
 template<>
 void Uniform<Vertex>::set_value(Vertex const& value) {
-	program().bind();
+	bind_program();
 	glUniform3f(location(), value.x, value.y, value.z);
 }
 
