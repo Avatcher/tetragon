@@ -2,6 +2,7 @@ set(MODULE_NAME graphics)
 set(SOURCES
 	src/graphics.cc
 	src/primitives.cc
+	src/shaders.cc
 )
 
 find_package(OpenGL REQUIRED)

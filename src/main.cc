@@ -17,10 +17,10 @@
 #define WINDOW_HEIGHT 400
 
 using namespace tetragon;
-using spdlog::info, spdlog::debug, spdlog::warn, spdlog::error;
+using namespace tetragon::graphics;
 
 void postpone_closing(tetragon::Window& window, int seconds);
-tetragon::ShaderProgram create_shader_program();
+ShaderProgram create_shader_program();
 void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset);
 
 int main() {
@@ -151,7 +151,7 @@ void postpone_closing(tetragon::Window& window, int seconds) {
 	t.detach();
 }
 
-tetragon::ShaderProgram create_shader_program() {
+ShaderProgram create_shader_program() {
 	using namespace tetragon;
 	const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
 	const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
