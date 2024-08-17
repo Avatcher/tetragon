@@ -26,6 +26,8 @@ void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset);
 int main() {
 	tetragon::init_logs();
 
+	using namespace tetragon::graphics;
+
 	class TetragonWindow : public tetragon::Window {
 	public:
 		TetragonWindow(): Window(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT) {}
@@ -112,6 +114,12 @@ int main() {
 
 	u_time.set_value(1024);
 	spdlog::info("u_time.value() == {}", u_time.value());
+
+	auto u_secret = shaderProgram.uniform<int>("u_secret");
+	u_secret.set_value(1024);
+
+	auto v = vec(1, 1);
+	spdlog::info("({}|{}) length: {}", v.x, v.y, v.length());
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// postpone_closing(window, 2);

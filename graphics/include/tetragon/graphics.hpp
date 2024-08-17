@@ -9,6 +9,8 @@
 #include <type_traits>
 #include <concepts>
 
+#include "graphics/primitives.hpp"
+
 namespace tetragon {
 
 using Object = GLuint;
