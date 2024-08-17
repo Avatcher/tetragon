@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 project(tetragon)
-add_subdirectory(applications)
-add_subdirectory(graphics)
 
 if(DEFINED ENV{VCPKG_ROOT})
    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
@@ -10,6 +8,9 @@ if(DEFINED ENV{VCPKG_ROOT})
    include("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 endif()
 include(injecto.cmake)
+
+add_subdirectory(applications)
+add_subdirectory(graphics)
 
 set(CXX_STANDARD 20)
 
