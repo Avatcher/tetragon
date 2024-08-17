@@ -84,19 +84,27 @@ class Uniform {
 	ShaderProgram& m_program;
 	const char* m_name;
 	int m_location;
+	bool m_blank;
 
 public:
 	Uniform(ShaderProgram& program, const char* name, int location):
-			m_program(program), m_name(name), m_location(location) {
-	}
+			m_program(program), m_name(name), m_location(location) {}
 
 	Uniform(Uniform const& other):
 			Uniform(other.m_program, other.m_name, other.m_location) {
 	}
 
-	void set_value(T const& value);
-	T value() const;
+	static Uniform<T> blank(ShaderProgram& program, const char* name) {
+		Uniform<T> uniform(program, name, -1);
+		uniform.m_blank = true;
+		return uniform;
+	}
 
+	void set_value(T const& value) {}
+
+	T value() const {
+		return T{};
+	}
 
 	ShaderProgram& program() const {
 		return m_program;
@@ -112,6 +120,10 @@ public:
 
 	int location() const {
 		return m_location;
+	}
+
+	bool is_blank() const {
+		return m_blank;
 	}
 
 	Uniform<T> operator=(Uniform<T> const& other) {
@@ -141,8 +153,9 @@ public:
 	Uniform<T> uniform(const char* name) {
 		int location = glGetUniformLocation(m_object, name);
 		if (location < 0) {
-			spdlog::error("Could not find uniform with name `{}`", name);
-			std::terminate();
+			spdlog::warn("Could not find uniform with name `{}`", name);
+			spdlog::warn("Returning a blank Uniform");
+			return Uniform<T>::blank(*this, name);
 		}
 		return Uniform<T>(*this, name, location);
 	}

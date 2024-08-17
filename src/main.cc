@@ -105,6 +105,13 @@ int main() {
 
 	auto u_green = shaderProgram.uniform<float>("u_green");
 	auto u_offset = shaderProgram.uniform<Vertex>("u_offset");
+	auto u_time = shaderProgram.uniform<float>("u_time");
+
+	spdlog::info("u_green.is_blank() == {}", u_green.is_blank());
+	spdlog::info("u_time.is_blank() == {}", u_time.is_blank());
+
+	u_time.set_value(1024);
+	spdlog::info("u_time.value() == {}", u_time.value());
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// postpone_closing(window, 2);
