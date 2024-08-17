@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 #include <fmt/color.h>
-#include "initializations.hpp"
-#include "application.hpp"
+#include <tetragon/initializations.hpp>
+#include <tetragon/applications.hpp>
 #include "graphics.hpp"
 #include "resources.hpp"
 

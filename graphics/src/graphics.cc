@@ -13,7 +13,6 @@
 #include <chrono>
 #include <vector>
 #include "graphics.hpp"
-#include "initializations.hpp"
 
 namespace tetragon {
 

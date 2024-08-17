@@ -1,5 +1,5 @@
-#ifndef TETRAGON_APPLICATION_HPP
-#define TETRAGON_APPLICATION_HPP
+#ifndef TETRAGON_APPLICATIONS_HPP
+#define TETRAGON_APPLICATIONS_HPP
 
 #include <GLFW/glfw3.h>
 #include <functional>
@@ -98,4 +98,4 @@ public:
 
 } // tetragon
 
-#endif // TETRAGON_APPLICATION_HPP
+#endif // TETRAGON_APPLICATIONS_HPP

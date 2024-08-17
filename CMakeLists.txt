@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(tetragon)
+add_subdirectory(applications)
+add_subdirectory(graphics)
 
 if(DEFINED ENV{VCPKG_ROOT})
    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
@@ -22,9 +24,7 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(spdlog 1.9.2 REQUIRED)
 
 set(SOURCES
-   src/initializations.cc
-   src/graphics.cc
-   src/application.cc
+
 )
 
 add_executable(${PROJECT_NAME}
@@ -39,9 +39,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 target_link_libraries(${PROJECT_NAME}
-   PRIVATE glad::glad
-   PRIVATE OpenGL::GL
-   PRIVATE glfw
-   PRIVATE spdlog::spdlog
+   PRIVATE applications
+   PRIVATE graphics
 )
-

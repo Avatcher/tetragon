@@ -1,5 +1,5 @@
 #include <map>
-#include "application.hpp"
+#include "applications.hpp"
 #include "initializations.hpp"
 
 namespace tetragon {
