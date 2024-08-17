@@ -148,6 +148,10 @@ GLuint ShaderProgram::get_attribute_location(VertexAttribute const& attribute) c
 	return glGetAttribLocation(m_object, attribute.name());
 }
 
+bool ShaderProgram::has_uniform(const char* name) const {
+	return glGetUniformLocation(m_object, name) != -1;
+}
+
 ShaderProgram::Builder::Builder() {
 	m_object = glCreateProgram();
 }

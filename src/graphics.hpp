@@ -135,6 +135,8 @@ public:
 	bool is_bound() const;
 	uint get_attribute_location(VertexAttribute const& attribute) const;
 
+	bool has_uniform(const char* name) const;
+
 	template<IsUniformable T>
 	Uniform<T> uniform(const char* name) {
 		int location = glGetUniformLocation(m_object, name);
