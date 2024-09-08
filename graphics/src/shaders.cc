@@ -1,10 +1,15 @@
 #define GL_GLEXT_PROTOTYPES
 
+#include <glad/glad.h>
 #include <spdlog/spdlog.h>
 #include <fmt/color.h>
 #include <fmt/ranges.h>
-#include <GL/gl.h>
 #include <stdexcept>
+// #include <GLFW/glfw3.h>
+// #include <GL/gl.h>
+// #include <GL/gl.h>
+// #include <GL/glext.h>
+
 #include "graphics/shaders.hpp"
 
 namespace tetragon::graphics {
@@ -42,18 +47,18 @@ Shader::~Shader() {
 	glDeleteShader(m_object);
 }
 
-template<>
-void Uniform<double>::set_value(double const& value) {
-	program().bind();
-	glUniform1d(location(), value);
-}
-
-template<>
-double Uniform<double>::value() const {
-	double value;
-	glGetUniformdv(program().m_object, location(), &value);
-	return value;
-}
+// template<>
+// void Uniform<double>::set_value(double const& value) {
+// 	program().bind();
+// 	glUniform1d(location(), value);
+// }
+//
+// template<>
+// double Uniform<double>::value() const {
+// 	double value;
+// 	glGetUniformdv(program().m_object, location(), &value);
+// 	return value;
+// }
 
 template<>
 void Uniform<float>::set_value(float const& value) {

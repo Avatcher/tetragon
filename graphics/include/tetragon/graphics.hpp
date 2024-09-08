@@ -1,7 +1,7 @@
 #ifndef TETRAGON_APPLICATION_H
 #define TETRAGON_APPLICATION_H
 
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 #include <exception>
 #include <thread>
 #include <mutex>

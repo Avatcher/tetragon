@@ -1,15 +1,16 @@
 #ifndef TETRAGON_GRAPHICS_SHADERS_HPP
 #define TETRAGON_GRAPHICS_SHADERS_HPP
 
-#include <GL/gl.h>
-#include <bits/types.h>
+#include <glad/glad.h>
+// #include <GL/gl.h>
+// #include <GL/glext.h>
 #include <initializer_list>
-#include <concepts>
 #include <string>
 
 namespace tetragon::graphics {
 
 using Object = GLuint;
+using uint = unsigned int;
 
 enum class ShaderType {
 	VERTEX, FRAGMENT	
@@ -98,11 +99,9 @@ public:
 		return uniform;
 	}
 
-	void set_value(T const& value) {}
+	void set_value(T const& value);
 
-	T value() const {
-		return T{};
-	}
+	T value() const;
 
 	ShaderProgram& program() const {
 		return m_program;

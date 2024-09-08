@@ -1,5 +1,8 @@
 #include <map>
 #include "applications.hpp"
+
+#include <glad/glad.h>
+
 #include "initializations.hpp"
 
 namespace tetragon {
