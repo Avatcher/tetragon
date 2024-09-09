@@ -202,7 +202,7 @@ VertexBuffer::~VertexBuffer() {
 	delete[] m_buffer;
 }
 
-void VertexBuffer::ensure_capability(uint additionalSize, Usage usage) {
+void VertexBuffer::ensure_capacity(uint additionalSize, Usage usage) {
 	if (m_size + additionalSize < m_maxSize) return;
 	m_maxSize *= 2;
 
@@ -245,7 +245,7 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
 	// std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
 	// std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
-	ensure_capability(size, usage);
+	ensure_capacity(size, usage);
 	memcpy(m_ptr, ptr, size);
 	m_ptr += size;
 	m_size += size;

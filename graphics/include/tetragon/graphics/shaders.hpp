@@ -211,7 +211,7 @@ public:
 	unsigned long size() const;
 
 private:
-	void ensure_capability(uint additionalSize, Usage usage);
+	void ensure_capacity(uint additionalSize, Usage usage);
 };
 
 class VertexArray {
