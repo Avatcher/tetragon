@@ -8,6 +8,7 @@
 #include <tetragon/initializations.hpp>
 #include <tetragon/applications.hpp>
 #include <tetragon/graphics.hpp>
+#include <tetragon/graphics/primitives.hpp>
 
 #include "resources.hpp"
 
@@ -69,7 +70,8 @@ int main() {
 	VertexArray VAO;
 	VAO.bind(); 
 
-	VertexBuffer vbo1, vbo2;
+	constexpr auto usage = VertexBuffer::Usage::STATIC;
+	VertexBuffer vbo1(usage), vbo2(usage);
 
 	ShaderProgram shaderProgram = create_shader_program();
 	shaderProgram.bind();
@@ -78,24 +80,21 @@ int main() {
 			.set_type(GL_FLOAT)
 			.set_size(3);
 
-	const VertexAttribute posAttrib =
-		vertexAttribBuilder.set_name("pos").build();
-	const VertexAttribute colorAttrib =
-		vertexAttribBuilder.set_name("color").build();
+	const VertexAttribute posAttrib = vertexAttribBuilder.set_name("pos").build();
+	const VertexAttribute colorAttrib = vertexAttribBuilder.set_name("color").build();
 
 	vbo1.add_attribute(posAttrib);
 	vbo2.add_attribute(colorAttrib);
 
-	constexpr auto usage = VertexBuffer::Usage::STATIC;
-	vbo1.buffer(triangle, usage);
-	vbo1.buffer(triangleBravo, usage);
+	vbo1.buffer(triangle);
+	vbo1.buffer(triangleBravo);
 
-	vbo2.buffer(Vertex{ 1, 0, 0 }, usage);
-	vbo2.buffer(Vertex{ 1, 1, 0 }, usage);
-	vbo2.buffer(Vertex{ 1, 1, 1 }, usage);
-	vbo2.buffer(Vertex{ 0, 1, 0 }, usage);
-	vbo2.buffer(Vertex{ 0, 1, 1 }, usage);
-	vbo2.buffer(Vertex{ 1, 1, 1 }, usage);
+	vbo2.buffer(Vertex{ 1, 0, 0 });
+	vbo2.buffer(Vertex{ 1, 1, 0 });
+	vbo2.buffer(Vertex{ 1, 1, 1 });
+	vbo2.buffer(Vertex{ 0, 1, 0 });
+	vbo2.buffer(Vertex{ 0, 1, 1 });
+	vbo2.buffer(Vertex{ 1, 1, 1 });
 
 	auto u_green = shaderProgram.uniform<float>("u_green");
 	auto u_offset = shaderProgram.uniform<Vertex>("u_offset");

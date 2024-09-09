@@ -57,7 +57,7 @@ public:
 		Builder& set_normalized(bool normalized);
 		Builder& set_stride(uint stride);
 
-		VertexAttribute build();
+		VertexAttribute build() const;
 	};
 };
 
@@ -170,6 +170,13 @@ public:
 };
 
 class VertexBuffer final {
+public:
+	enum class Usage : GLenum {
+		STREAM = GL_STREAM_DRAW,
+		STATIC = GL_STATIC_DRAW,
+		DYNAMIC = GL_DYNAMIC_DRAW
+	};
+private:
 	using byte = char;
 
 	static constexpr size_t DEFAULT_BUFFER_SIZE = 32;
@@ -180,37 +187,30 @@ class VertexBuffer final {
 	uint m_size = 0;
 	uint m_maxSize = DEFAULT_BUFFER_SIZE;
 	std::string m_name;
+	Usage m_usage;
 
 public:
-	enum class Usage : GLenum {
-		STREAM = GL_STREAM_DRAW,
-		STATIC = GL_STATIC_DRAW,
-		DYNAMIC = GL_DYNAMIC_DRAW
-	};
-
 	VertexBuffer();
+	explicit VertexBuffer(Usage usage);
 	virtual ~VertexBuffer();
+
+	[[nodiscard]] Usage usage() const;
+	void set_usage(Usage usage);
+
+	[[nodiscard]] unsigned long size() const;
 
 	void bind() const;
 	void add_attribute(VertexAttribute const& attribute);
 
 	void buffer(const void* ptr, unsigned long size);
-	void buffer(const void* ptr, unsigned long size, Usage usage);
-	
+
 	template<class T>
 	void buffer(T const& data) {
-		buffer(data, Usage::DYNAMIC);
+		data.buffer_to(*this);
 	}
-
-	template<class T>
-	void buffer(T const& data, Usage usage) {
-		data.buffer_to(*this, usage);
-	}
-
-	[[nodiscard]] unsigned long size() const;
 
 private:
-	void ensure_capacity(uint additionalSize, Usage usage);
+	void ensure_capacity(uint additionalSize);
 };
 
 class VertexArray final {
@@ -229,7 +229,7 @@ public:
 	Vertex() = default;
 	Vertex(std::initializer_list<float> values);
 
-	void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const;
+	void buffer_to(VertexBuffer& buffer) const;
 	
 	// std::string to_string() const override;
 };

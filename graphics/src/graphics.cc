@@ -30,11 +30,10 @@ unsigned int Triangle::vertex_count() const {
 	return 3;
 }
 
-void Triangle::buffer_to(VertexBuffer &buffer,
-							VertexBuffer::Usage usage) const {
-	a.buffer_to(buffer, usage);
-	b.buffer_to(buffer, usage);
-	c.buffer_to(buffer, usage);
+void Triangle::buffer_to(VertexBuffer &buffer) const {
+	a.buffer_to(buffer);
+	b.buffer_to(buffer);
+	c.buffer_to(buffer);
 }
 
 /*
@@ -61,13 +60,13 @@ unsigned int Square::vertex_count() const {
 	return a.vertex_count() + b.vertex_count();
 }
 
-void Square::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
-	a.buffer_to(buffer, usage);
-	b.buffer_to(buffer, usage);
+void Square::buffer_to(VertexBuffer& buffer) const {
+	a.buffer_to(buffer);
+	b.buffer_to(buffer);
 }
 
-VertexAttribute::VertexAttribute(const char* name, uint size, GLenum type,
-			bool normalized, uint stride):
+VertexAttribute::VertexAttribute(const char* name, const uint size, const GLenum type,
+                                 const bool normalized, const uint stride):
 	m_name(name), m_size(size), m_type(type),
 	m_normalized(normalized), m_stride(stride) {
 }
@@ -117,10 +116,8 @@ VertexAttribute::Builder& VertexAttribute::Builder::set_stride(uint size) {
 	return *this;
 }
 
-VertexAttribute VertexAttribute::Builder::build() {
-	return VertexAttribute (
-		m_name, m_size, m_type, m_normalized, m_stride
-	);
+VertexAttribute VertexAttribute::Builder::build() const {
+	return { m_name, m_size, m_type, m_normalized, m_stride };
 }
 
 } // namespace tetragon

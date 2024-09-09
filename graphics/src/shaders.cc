@@ -179,8 +179,11 @@ namespace {
 	}
 }
 
-VertexBuffer::VertexBuffer():
-		m_object(create_vertex_buffer()) {
+VertexBuffer::VertexBuffer(): VertexBuffer(Usage::STATIC) {}
+
+VertexBuffer::VertexBuffer(const Usage usage):
+		m_object(create_vertex_buffer()),
+		m_usage(usage) {
 	m_buffer = new byte[m_maxSize] {};
 	for (int i = 0; i < m_maxSize; i++) {
 		const byte b = m_buffer[i];
@@ -196,7 +199,7 @@ VertexBuffer::~VertexBuffer() {
 	delete[] m_buffer;
 }
 
-void VertexBuffer::ensure_capacity(uint additionalSize, Usage usage) {
+void VertexBuffer::ensure_capacity(const uint additionalSize) {
 	if (m_size + additionalSize < m_maxSize) return;
 	m_maxSize *= 2;
 
@@ -206,7 +209,7 @@ void VertexBuffer::ensure_capacity(uint additionalSize, Usage usage) {
 	m_buffer = expandedBuffer;
 	m_ptr = m_buffer + m_size;
 
-	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
+	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) m_usage);
 	spdlog::info("Expanded {} size: {} -> {}", m_name, m_maxSize / 2, m_maxSize);
 }
 
@@ -231,20 +234,24 @@ void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
 	fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
 }
 
-void VertexBuffer::buffer(const void* ptr, const unsigned long size) {
-	buffer(ptr, size, Usage::DYNAMIC);
+VertexBuffer::Usage VertexBuffer::usage() const {
+	return m_usage;
 }
 
-void VertexBuffer::buffer(const void* ptr, const unsigned long size, Usage usage) {
+void VertexBuffer::set_usage(const Usage usage) {
+	m_usage = usage;
+}
+
+void VertexBuffer::buffer(const void* ptr, const unsigned long size) {
 	std::vector oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
 	std::vector valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
-	ensure_capacity(size, usage);
+	ensure_capacity(size);
 	memcpy(m_ptr, ptr, size);
 	m_ptr += size;
 	m_size += size;
 	bind();
-	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, static_cast<GLenum>(usage));
+	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) m_usage);
 
 	spdlog::debug(" {}: [ {:.1f}, {} ]",
 		m_name,
@@ -281,8 +288,8 @@ Vertex::Vertex(const std::initializer_list<float> values) {
 	}
 }
 
-void Vertex::buffer_to(VertexBuffer& buffer, const VertexBuffer::Usage usage) const {
-	buffer.buffer(&x, 3 * sizeof(float), usage);
+void Vertex::buffer_to(VertexBuffer& buffer) const {
+	buffer.buffer(&x, sizeof(decltype(x)) * 3);
 }
 
 } // tetragon::graphics
