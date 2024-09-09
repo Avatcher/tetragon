@@ -1,5 +1,3 @@
-#define GL_GLEXT_PROTOTYPES
-
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -10,6 +8,7 @@
 #include <tetragon/initializations.hpp>
 #include <tetragon/applications.hpp>
 #include <tetragon/graphics.hpp>
+
 #include "resources.hpp"
 
 #define WINDOW_NAME "Tetragon"
@@ -19,20 +18,18 @@
 using namespace tetragon;
 using namespace tetragon::graphics;
 
-void postpone_closing(tetragon::Window& window, int seconds);
+void postpone_closing(Window& window, int seconds);
 ShaderProgram create_shader_program();
 void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset);
 
 int main() {
-	tetragon::init_logs();
+	init_logs();
 
-	using namespace tetragon::graphics;
-
-	class TetragonWindow : public tetragon::Window {
+	class TetragonWindow : public Window {
 	public:
 		TetragonWindow(): Window(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
-		std::string construct_title() {
+		[[nodiscard]] std::string construct_title() const {
 			return fmt::format("{} {}x{}", WINDOW_NAME, get_width(), get_height());
 		}
 
@@ -45,9 +42,9 @@ int main() {
 	window.make_context();
 
 	Controls controls(window);
-	controls.add_binding(GLFW_KEY_SPACE, [](Window& window) {
+	controls.add_binding(GLFW_KEY_SPACE, [](Window&) {
 		spdlog::info("Press {} to exit application",
-			fmt::format(fmt::fg(fmt::color::magenta), "SHIFT + SPACE"));
+			format(fg(fmt::color::magenta), "SHIFT + SPACE"));
 	});
 	controls.add_binding({ GLFW_KEY_LEFT_SHIFT, GLFW_KEY_SPACE }, [](Window& window) {
 		spdlog::info("Exit hotkey pressed, closing the application...");
@@ -89,10 +86,7 @@ int main() {
 	vbo1.add_attribute(posAttrib);
 	vbo2.add_attribute(colorAttrib);
 
-	Vertex colorRed	= { 1, 0, 0 };
-	Vertex colorGreen = { 0, 1, 0 };
-
-	const VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC;
+	constexpr auto usage = VertexBuffer::Usage::STATIC;
 	vbo1.buffer(triangle, usage);
 	vbo1.buffer(triangleBravo, usage);
 
@@ -102,8 +96,6 @@ int main() {
 	vbo2.buffer(Vertex{ 0, 1, 0 }, usage);
 	vbo2.buffer(Vertex{ 0, 1, 1 }, usage);
 	vbo2.buffer(Vertex{ 1, 1, 1 }, usage);
-
-	const unsigned int verteciesCount = vbo1.size() / sizeof(Vertex);
 
 	auto u_green = shaderProgram.uniform<float>("u_green");
 	auto u_offset = shaderProgram.uniform<Vertex>("u_offset");
@@ -141,7 +133,7 @@ int main() {
 	return 0;
 }
 
-void postpone_closing(tetragon::Window& window, int seconds) {
+void postpone_closing(Window& window, int seconds) {
 	std::thread t([&window, seconds]() {
 		spdlog::info("Postponing closing for {} seconds", seconds);
 		std::this_thread::sleep_for(std::chrono::seconds(seconds));
@@ -155,8 +147,8 @@ ShaderProgram create_shader_program() {
 	using namespace tetragon;
 	const char* vertexShaderSource = RESOURCE_VERTEX_VERT;
 	const char* fragmentShaderSource = RESOURCE_FRAGMENT_FRAG;
-	Shader vertexShader(ShaderType::VERTEX, vertexShaderSource);
-	Shader fragmentShader(ShaderType::FRAGMENT, fragmentShaderSource);
+	const Shader vertexShader(ShaderType::VERTEX, vertexShaderSource);
+	const Shader fragmentShader(ShaderType::FRAGMENT, fragmentShaderSource);
 	return ShaderProgram::Builder()
 		.attach_shader(vertexShader)
 		.attach_shader(fragmentShader)
@@ -164,12 +156,12 @@ ShaderProgram create_shader_program() {
 }
 
 void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset) {
-	float time = glfwGetTime();
-	float timeSin = sin(time);
-	float greenValue = fabs(timeSin);
+	const float time = glfwGetTime();
+	const float timeSin = sin(time);
+	const float greenValue = fabs(timeSin);
 	u_green.set_value(greenValue);
 
-	float length = .5f;
-	Vertex offset{ length * (1.f - timeSin) - length, 0, 0 };
+	constexpr float length = .5f;
+	const Vertex offset{ length * (1.f - timeSin) - length, 0, 0 };
 	u_offset.set_value(offset);
 }
