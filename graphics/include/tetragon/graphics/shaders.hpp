@@ -172,12 +172,14 @@ public:
 
 class VertexBuffer {
 	using byte = char;
+
+	static constexpr size_t DEFAULT_BUFFER_SIZE = 32;
 	
 	const Object m_object;
 	byte* m_buffer;
 	byte* m_ptr;
-	uint m_size;
-	uint m_maxSize;
+	uint m_size = 0;
+	uint m_maxSize = DEFAULT_BUFFER_SIZE;
 	std::string m_name;
 
 public:

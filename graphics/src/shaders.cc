@@ -187,8 +187,11 @@ namespace {
 
 VertexBuffer::VertexBuffer():
 		m_object(create_vertex_buffer()) {
-	m_maxSize = 32;
-	m_buffer = new byte[m_maxSize];
+	m_buffer = new byte[m_maxSize] {};
+	for (int i = 0; i < m_maxSize; i++) {
+		const byte b = m_buffer[i];
+		assert(b == 0);
+	}
 	m_ptr = m_buffer;
 	m_name = "Buffer";
 	bind();
@@ -196,17 +199,19 @@ VertexBuffer::VertexBuffer():
 
 VertexBuffer::~VertexBuffer() {
 	glDeleteBuffers(1, &m_object);
-	delete m_buffer;
+	delete[] m_buffer;
 }
 
 void VertexBuffer::ensure_capability(uint additionalSize, Usage usage) {
 	if (m_size + additionalSize < m_maxSize) return;
 	m_maxSize *= 2;
-	byte* expandedBuffer = new byte[m_maxSize];
+
+	auto expandedBuffer = new byte[m_maxSize];
 	memcpy(expandedBuffer, m_buffer, m_size);
-	delete m_buffer;
+	delete[] m_buffer;
 	m_buffer = expandedBuffer;
 	m_ptr = m_buffer + m_size;
+
 	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 	spdlog::info("Expanded {} size: {} -> {}", m_name, m_maxSize / 2, m_maxSize);
 }
@@ -237,8 +242,8 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size) {
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
-		std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
-	std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
+	// std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
+	// std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
 	ensure_capability(size, usage);
 	memcpy(m_ptr, ptr, size);
@@ -248,11 +253,11 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
 	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 
 	// spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
-	spdlog::debug(" {}: [ {:.1f}, {} ]",
-		m_name,
-		fmt::join(oldBufferVector, ", "),
-		fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
-	);
+	// spdlog::debug(" {}: [ {:.1f}, {} ]",
+	// 	m_name,
+	// 	fmt::join(oldBufferVector, ", "),
+	// 	fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
+	// );
 }
 
 unsigned long VertexBuffer::size() const {
