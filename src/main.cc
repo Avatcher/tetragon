@@ -30,11 +30,11 @@ int main() {
 		TetragonWindow(): Window(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
 		[[nodiscard]] std::string construct_title() const {
-			return fmt::format("{} {}x{}", WINDOW_NAME, get_width(), get_height());
+			return fmt::format("{} {}x{}", WINDOW_NAME, width(), height());
 		}
 
 		void on_resize(int oldWidth, int oldHeight) override {
-			glViewport(0, 0, get_width(), get_height());
+			glViewport(0, 0, width(), height());
 			std::string title = construct_title();
 			set_title(title.c_str());
 		}

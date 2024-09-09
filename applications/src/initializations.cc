@@ -11,12 +11,12 @@
 #	define TETRAGON_LOG_PATTERN "[%H:%M:%S.%e] (t%t) %^%G%$ : %v"
 #endif
 
-class LogLevelEmojiFlag : public spdlog::custom_flag_formatter {
+class LogLevelEmojiFlag final : public spdlog::custom_flag_formatter {
 	static const std::map<spdlog::level::level_enum, std::string> emojis;
 public:
 
 	void format(spdlog::details::log_msg const& msg, std::tm const&, spdlog::memory_buf_t& dest) override {
-		const std::string emoji = emojis.at(msg.level);
+		const std::string& emoji = emojis.at(msg.level);
 		dest.append(emoji.data(), emoji.data() + emoji.size());
 	}
 
@@ -32,11 +32,11 @@ const std::map<spdlog::level::level_enum, std::string> LogLevelEmojiFlag::emojis
 	{ spdlog::level::debug, "\U000f00e4" }  // Bug
 };
 
-class ShortLevelFlag : public spdlog::custom_flag_formatter {
+class ShortLevelFlag final : public spdlog::custom_flag_formatter {
 	static const std::map<spdlog::level::level_enum, std::string> levelNames;
 public:
 	void format(spdlog::details::log_msg const& msg, std::tm const&, spdlog::memory_buf_t& dest) override {
-		const std::string levelName = levelNames.at(msg.level);
+		const std::string& levelName = levelNames.at(msg.level);
 		dest.append(levelName.data(), levelName.data() + levelName.size());
 	}
 
@@ -75,7 +75,7 @@ void tetragon::init_glfw() {
 void tetragon::init_glad() {
 	static bool initialized = false;
 	if (initialized) return;
-	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
 		spdlog::error("Failed to initialize GLAD, exiting the program");
 		glfwTerminate();
 		std::exit(-1);

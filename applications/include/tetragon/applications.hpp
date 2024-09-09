@@ -5,7 +5,6 @@
 #include <functional>
 #include <mutex>
 #include <list>
-#include <map>
 
 namespace tetragon {
 
@@ -13,8 +12,7 @@ namespace callbacks {
 	void window_resize_callback(GLFWwindow* glfwWindow, int width, int height);
 } // callbacks
 
-class Window {
-private:
+class Window final {
 	GLFWwindow* m_window;
 	const char* m_title;
 	int m_width, m_height;
@@ -29,17 +27,17 @@ public:
 	void make_context() const;
 	void swap_buffers();
 
-	const char* get_title() const;
+	[[nodiscard]] const char* title() const;
 	void set_title(const char* title);
 
-	int get_width() const;
-	int get_height() const;
+	[[nodiscard]] int width() const;
+	[[nodiscard]] int height() const;
 	void set_size(int width, int height);
 
-	bool should_close() const;
+	[[nodiscard]] bool should_close() const;
 	void set_should_close(bool state);
 
-	int get_key(int key) const;
+	[[nodiscard]] int key(int key) const;
 
 	friend void callbacks::window_resize_callback(GLFWwindow* glfwWindow, int width, int heigh);
 	friend class WindowManager;
@@ -49,6 +47,8 @@ class WindowManager {
 protected:
 	GLFWwindow* get_glfw_window(Window* window);
 public:
+	virtual ~WindowManager() = default;
+
 	static WindowManager* const INSTANCE;
 
 	virtual void register_window(Window* window) = 0;
@@ -70,7 +70,7 @@ private:
 	mutable std::mutex m_processMutex;
 
 public:
-	Controls(Window& window);
+	explicit Controls(Window& window);
 
 	Controls& add_binding(Key key, BindingFn const& fn);
 	Controls& add_binding(std::initializer_list<Key> keys, BindingFn const& fn);
@@ -89,7 +89,7 @@ public:
 	public:
 		Binding(Controls& controls, BindingPredicate const& predicate, BindingFn const& fn);
 
-		bool is_triggered() const;
+		[[nodiscard]] bool is_triggered() const;
 		void execute() const;
 
 		bool operator==(Binding const& other) const;

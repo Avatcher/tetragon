@@ -43,7 +43,7 @@ void Window::swap_buffers() {
 	glfwSwapBuffers(m_window);
 }
 
-const char* Window::get_title() const {
+const char* Window::title() const {
 	return m_title;
 }
 
@@ -52,11 +52,11 @@ void Window::set_title(const char* title) {
 	glfwSetWindowTitle(m_window, title);
 }
 
-int Window::get_width() const {
+int Window::width() const {
 	return m_width;
 }
 
-int Window::get_height() const {
+int Window::height() const {
 	return m_height;
 }
 
@@ -74,7 +74,7 @@ void Window::set_should_close(bool state) {
 	glfwSetWindowShouldClose(m_window, state);
 }
 
-int Window::get_key(int key) const {
+int Window::key(int key) const {
 	return glfwGetKey(m_window, key);
 }
 
@@ -112,7 +112,7 @@ namespace {
 
 		bool operator()(Window& window) const {
 			for (Controls::Key key : m_keys) {
-				if (window.get_key(key) != GLFW_PRESS) return false;
+				if (window.key(key) != GLFW_PRESS) return false;
 			}
 			return true;
 		} 
