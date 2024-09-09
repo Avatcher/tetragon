@@ -242,8 +242,8 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size) {
 }
 
 void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
-	// std::vector<float> oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
-	// std::vector<float> valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
+	std::vector oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
+	std::vector valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
 	ensure_capacity(size, usage);
 	memcpy(m_ptr, ptr, size);
@@ -252,12 +252,11 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
 	bind();
 	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
 
-	// spdlog::debug("Buffered {} bytes, size: {}", size, m_size);
-	// spdlog::debug(" {}: [ {:.1f}, {} ]",
-	// 	m_name,
-	// 	fmt::join(oldBufferVector, ", "),
-	// 	fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
-	// );
+	spdlog::debug(" {}: [ {:.1f}, {} ]",
+		m_name,
+		fmt::join(oldBufferVector, ", "),
+		fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
+	);
 }
 
 unsigned long VertexBuffer::size() const {
