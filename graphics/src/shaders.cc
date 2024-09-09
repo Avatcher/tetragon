@@ -1,21 +1,15 @@
-#define GL_GLEXT_PROTOTYPES
-
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 #include <fmt/color.h>
 #include <fmt/ranges.h>
 #include <stdexcept>
-// #include <GLFW/glfw3.h>
-// #include <GL/gl.h>
-// #include <GL/gl.h>
-// #include <GL/glext.h>
 
 #include "graphics/shaders.hpp"
 
 namespace tetragon::graphics {
 
 namespace {
-	int convert_shader_type(ShaderType type) {
+	int convert_shader_type(const ShaderType type) {
 		switch (type) {
 			case ShaderType::VERTEX: return GL_VERTEX_SHADER;
 			case ShaderType::FRAGMENT: return GL_FRAGMENT_SHADER;
@@ -23,14 +17,14 @@ namespace {
 		throw std::runtime_error("Unexpected shader type");
 	}
 
-	GLuint create_shader(ShaderType type, const char* source) {
-		GLuint shader = glCreateShader(convert_shader_type(type));
+	Object create_shader(const ShaderType type, const char* source) {
+		const Object shader = glCreateShader(convert_shader_type(type));
 		glShaderSource(shader, 1, &source, nullptr);
 		glCompileShader(shader);
 		int success;
-		char message[512];
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success) {
+			char message[512];
 			glGetShaderInfoLog(shader,512, nullptr, message);
 			spdlog::error("Failed to build a shader: {}", message);
 			throw std::runtime_error(message);
@@ -39,7 +33,7 @@ namespace {
 	}
 }
 
-Shader::Shader(ShaderType type, const char* source):
+Shader::Shader(const ShaderType type, const char* source):
 		m_type(type), m_object(create_shader(type, source)) {
 }
 
@@ -161,9 +155,9 @@ ShaderProgram::Builder& ShaderProgram::Builder::attach_shader(Shader const& shad
 ShaderProgram ShaderProgram::Builder::build() const {
 	glLinkProgram(m_object);
 	int success;
-	char message[512];
 	glGetProgramiv(m_object, GL_LINK_STATUS, &success);
 	if (!success) {
+		char message[512];
 		glGetProgramInfoLog(m_object, 512, nullptr, message);
 		spdlog::error("Failed to link a shader program: {}", message);
 		throw std::runtime_error(message);
@@ -216,7 +210,7 @@ void VertexBuffer::ensure_capacity(uint additionalSize, Usage usage) {
 	spdlog::info("Expanded {} size: {} -> {}", m_name, m_maxSize / 2, m_maxSize);
 }
 
-void VertexBuffer::bind() {
+void VertexBuffer::bind() const {
 	glBindBuffer(GL_ARRAY_BUFFER, m_object);
 }
 
@@ -237,11 +231,11 @@ void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
 	fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
 }
 
-void VertexBuffer::buffer(const void* ptr, unsigned long size) {
+void VertexBuffer::buffer(const void* ptr, const unsigned long size) {
 	buffer(ptr, size, Usage::DYNAMIC);
 }
 
-void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
+void VertexBuffer::buffer(const void* ptr, const unsigned long size, Usage usage) {
 	std::vector oldBufferVector((float*) m_buffer, (float*) m_buffer + m_size / sizeof(float));
 	std::vector valuesVector((float*) ptr, (float*) ptr + size / sizeof(float));
 
@@ -250,12 +244,12 @@ void VertexBuffer::buffer(const void* ptr, unsigned long size, Usage usage) {
 	m_ptr += size;
 	m_size += size;
 	bind();
-	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, (GLenum) usage);
+	glBufferData(GL_ARRAY_BUFFER, m_size, m_buffer, static_cast<GLenum>(usage));
 
 	spdlog::debug(" {}: [ {:.1f}, {} ]",
 		m_name,
 		fmt::join(oldBufferVector, ", "),
-		fmt::format(fmt::fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
+		fmt::format(fg(fmt::color::green_yellow), "{:.1f}", fmt::join(valuesVector, ", "))
 	);
 }
 
@@ -271,13 +265,11 @@ VertexArray::~VertexArray() {
 	glDeleteVertexArrays(1, &m_object);
 }
 
-void VertexArray::bind() {
+void VertexArray::bind() const {
 	glBindVertexArray(m_object);
 }
 
-Vertex::Vertex() {}
-
-Vertex::Vertex(std::initializer_list<float> values) {
+Vertex::Vertex(const std::initializer_list<float> values) {
 	if (values.size() >= 3) {
 		z = *(values.begin() + 2);
 	}
@@ -289,7 +281,7 @@ Vertex::Vertex(std::initializer_list<float> values) {
 	}
 }
 
-void Vertex::buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const {
+void Vertex::buffer_to(VertexBuffer& buffer, const VertexBuffer::Usage usage) const {
 	buffer.buffer(&x, 3 * sizeof(float), usage);
 }
 

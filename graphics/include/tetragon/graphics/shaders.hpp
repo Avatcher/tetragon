@@ -2,8 +2,6 @@
 #define TETRAGON_GRAPHICS_SHADERS_HPP
 
 #include <glad/glad.h>
-// #include <GL/gl.h>
-// #include <GL/glext.h>
 #include <initializer_list>
 #include <string>
 
@@ -16,7 +14,7 @@ enum class ShaderType {
 	VERTEX, FRAGMENT	
 };
 
-class Shader {
+class Shader final {
 	const ShaderType m_type;
 	const Object m_object;
 public:
@@ -24,7 +22,7 @@ public:
 	Shader(Shader const&) = delete;
 	virtual ~Shader();
 
-	ShaderType get_type() const;
+	[[nodiscard]] ShaderType get_type() const;
 
 	friend class ShaderProgram;
 };
@@ -40,18 +38,18 @@ public:
 	VertexAttribute(const char* name, uint size, GLenum type,
 			bool normalized, uint stride);
 
-	const char* name() const;
-	uint size() const;
-	GLenum type() const;
-	bool normalized() const;
-	uint stride() const;
+	[[nodiscard]] const char* name() const;
+	[[nodiscard]] uint size() const;
+	[[nodiscard]] GLenum type() const;
+	[[nodiscard]] bool normalized() const;
+	[[nodiscard]] uint stride() const;
 
 	class Builder {
-		const char* m_name;
-		uint m_size;
-		GLenum m_type;
-		bool m_normalized;
-		uint m_stride;
+		const char* m_name = nullptr;
+		uint m_size = 0;
+		GLenum m_type = 0;
+		bool m_normalized = false;
+		uint m_stride = 0;
 	public:
 		Builder& set_name(const char* name);
 		Builder& set_size(uint size);
@@ -66,7 +64,7 @@ public:
 class ShaderProgram;
 class Vertex;
 
-template<class T>
+template<class>
 struct is_uniformable : std::bool_constant<false> {};
 
 template<> struct is_uniformable<double> : std::bool_constant<true> {};
@@ -85,13 +83,14 @@ class Uniform {
 	int m_location;
 	bool m_blank;
 
+	Uniform(ShaderProgram& program, const char* name, const int location, const bool blank):
+			m_program(program), m_name(name), m_location(location), m_blank(blank) {}
 public:
-	Uniform(ShaderProgram& program, const char* name, int location):
-			m_program(program), m_name(name), m_location(location) {}
+	Uniform(ShaderProgram& program, const char* name, const int location):
+			Uniform(program, name, location, false) {}
 
 	Uniform(Uniform const& other):
-			Uniform(other.m_program, other.m_name, other.m_location) {
-	}
+			Uniform(other.m_program, other.m_name, other.m_location, other.m_blank) {}
 
 	static Uniform<T> blank(ShaderProgram& program, const char* name) {
 		Uniform<T> uniform(program, name, -1);
@@ -103,7 +102,7 @@ public:
 
 	T value() const;
 
-	ShaderProgram& program() const {
+	[[nodiscard]] ShaderProgram& program() const {
 		return m_program;
 	}
 
@@ -111,15 +110,15 @@ public:
 		program().bind();
 	}
 
-	const char* name() const {
+	[[nodiscard]] const char* name() const {
 		return m_name;
 	}
 
-	int location() const {
+	[[nodiscard]] int location() const {
 		return m_location;
 	}
 
-	bool is_blank() const {
+	[[nodiscard]] bool is_blank() const {
 		return m_blank;
 	}
 
@@ -133,7 +132,7 @@ class ShaderProgram {
 
 	const Object m_object;
 
-	ShaderProgram(Object program);
+	explicit ShaderProgram(Object program);
 public:
 	ShaderProgram(ShaderProgram const&) = delete;
 	~ShaderProgram();
@@ -141,8 +140,8 @@ public:
 	static ShaderProgram* get_bound_instance();
 
 	void bind();
-	bool is_bound() const;
-	uint get_attribute_location(VertexAttribute const& attribute) const;
+	[[nodiscard]] bool is_bound() const;
+	[[nodiscard]] uint get_attribute_location(VertexAttribute const& attribute) const;
 
 	bool has_uniform(const char* name) const;
 
@@ -162,15 +161,15 @@ public:
 	public:
 		Builder();
 
-		ShaderProgram::Builder& attach_shader(Shader const& shader);
-		ShaderProgram build() const;
+		Builder& attach_shader(Shader const& shader);
+		[[nodiscard]] ShaderProgram build() const;
 	};
 
 	template<IsUniformable T>
 	friend class Uniform;
 };
 
-class VertexBuffer {
+class VertexBuffer final {
 	using byte = char;
 
 	static constexpr size_t DEFAULT_BUFFER_SIZE = 32;
@@ -192,7 +191,7 @@ public:
 	VertexBuffer();
 	virtual ~VertexBuffer();
 
-	void bind();
+	void bind() const;
 	void add_attribute(VertexAttribute const& attribute);
 
 	void buffer(const void* ptr, unsigned long size);
@@ -208,26 +207,26 @@ public:
 		data.buffer_to(*this, usage);
 	}
 
-	unsigned long size() const;
+	[[nodiscard]] unsigned long size() const;
 
 private:
 	void ensure_capacity(uint additionalSize, Usage usage);
 };
 
-class VertexArray {
+class VertexArray final {
 	const Object m_object;
 public:
 	VertexArray();
 	virtual ~VertexArray();
 
-	void bind();
+	void bind() const;
 };
 
 class Vertex {
 public:
 	float x, y, z;
 
-	Vertex();
+	Vertex() = default;
 	Vertex(std::initializer_list<float> values);
 
 	void buffer_to(VertexBuffer& buffer, VertexBuffer::Usage usage) const;
