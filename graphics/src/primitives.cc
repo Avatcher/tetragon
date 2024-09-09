@@ -2,13 +2,13 @@
 #include "graphics/primitives.hpp"
 
 namespace {
-double CONSTEXPR sqrtNewtonRaphson(double x, double curr, double prev) {
-	return curr == prev
-		? curr
-		: sqrtNewtonRaphson(x, 0.5 * (curr + x / curr), curr);
+double CONSTEXPR sqrtNewtonRaphson(const double x, const double current, const double previous) {
+	return current == previous
+		? current
+		: sqrtNewtonRaphson(x, 0.5 * (current + x / current), current);
 }
 
-double CONSTEXPR sqrt(double x) {
+double CONSTEXPR sqrt(const double x) {
     return x >= 0 && x < std::numeric_limits<double>::infinity()
         ? sqrtNewtonRaphson(x, x, 0)
         : std::numeric_limits<double>::quiet_NaN();
@@ -18,13 +18,13 @@ double CONSTEXPR sqrt(double x) {
 
 namespace tetragon::graphics {
 
-CONSTEXPR Vector2::Vector2(float x, float y):
+CONSTEXPR Vector2::Vector2(const float x, const float y):
 	x(x), y(y) {}
 
-CONSTEXPR Vector3::Vector3(float x, float y, float z):
+CONSTEXPR Vector3::Vector3(const float x, const float y, const float z):
 	Vector2(x, y), z(z) {}
 
-CONSTEXPR Vector4::Vector4(float x, float y, float z, float w):
+CONSTEXPR Vector4::Vector4(const float x, const float y, const float z, const float w):
 	Vector3(x, y, z), w(w) {}
 
 #pragma region Vector2
@@ -186,8 +186,8 @@ CONSTEXPR Vector4 Vector4::operator-() const {
 }
 #pragma endregion
 
-CONSTEXPR Vector2 vec(float x, float y) { return Vector2 { x, y }; }
-CONSTEXPR Vector3 vec(float x, float y, float z) { return Vector3 { x, y, z }; }
-CONSTEXPR Vector4 vec(float x, float y, float z, float w) { return Vector4 { x, y, z, w }; }
+CONSTEXPR Vector2 vec(const float x, const float y) { return Vector2 { x, y }; }
+CONSTEXPR Vector3 vec(const float x, const float y, const float z) { return Vector3 { x, y, z }; }
+CONSTEXPR Vector4 vec(const float x, const float y, const float z, const float w) { return Vector4 { x, y, z, w }; }
 
 } // tetragon::graphics
