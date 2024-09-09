@@ -12,7 +12,7 @@ namespace callbacks {
 	void window_resize_callback(GLFWwindow* glfwWindow, int width, int height);
 } // callbacks
 
-class Window final {
+class Window {
 	GLFWwindow* m_window;
 	const char* m_title;
 	int m_width, m_height;
@@ -25,7 +25,7 @@ public:
 	virtual void on_resize(int oldWidth, int oldHeight);
 
 	void make_context() const;
-	void swap_buffers();
+	void swap_buffers() const;
 
 	[[nodiscard]] const char* title() const;
 	void set_title(const char* title);
@@ -45,7 +45,7 @@ public:
 
 class WindowManager {
 protected:
-	GLFWwindow* get_glfw_window(Window* window);
+	static GLFWwindow* get_glfw_window(const Window* window);
 public:
 	virtual ~WindowManager() = default;
 
@@ -87,7 +87,7 @@ public:
 		BindingFn m_function;
 	
 	public:
-		Binding(Controls& controls, BindingPredicate const& predicate, BindingFn const& fn);
+		Binding(Controls& controls, BindingPredicate  predicate, BindingFn  fn);
 
 		[[nodiscard]] bool is_triggered() const;
 		void execute() const;
