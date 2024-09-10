@@ -276,6 +276,61 @@ void VertexArray::bind() const {
 	glBindVertexArray(m_object);
 }
 
+	VertexAttribute::VertexAttribute(const char* name, const uint size, const GLenum type,
+                                 const bool normalized, const uint stride):
+	m_name(name), m_size(size), m_type(type),
+	m_normalized(normalized), m_stride(stride) {
+}
+
+const char* VertexAttribute::name() const {
+	return m_name;
+}
+
+uint VertexAttribute::size() const {
+	return m_size;
+}
+
+GLenum VertexAttribute::type() const {
+	return m_type;
+}
+
+bool VertexAttribute::normalized() const {
+	return m_normalized;
+}
+
+uint VertexAttribute::stride() const {
+	return m_stride;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_name(const char* name) {
+	m_name = name;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_size(uint size) {
+	m_size = size;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_type(GLenum type) {
+	m_type = type;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_normalized(bool state) {
+	m_normalized = state;
+	return *this;
+}
+
+VertexAttribute::Builder& VertexAttribute::Builder::set_stride(uint size) {
+	m_stride = size;
+	return *this;
+}
+
+VertexAttribute VertexAttribute::Builder::build() const {
+	return { m_name, m_size, m_type, m_normalized, m_stride };
+}
+
 Vertex::Vertex(const std::initializer_list<float> values) {
 	if (values.size() >= 3) {
 		z = *(values.begin() + 2);

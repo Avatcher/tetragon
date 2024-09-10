@@ -2,6 +2,7 @@
 #define TETRAGON_GRAPHICS_SHADERS_HPP
 
 #include <glad/glad.h>
+#include <spdlog/spdlog.h>
 #include <initializer_list>
 #include <string>
 

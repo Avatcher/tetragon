@@ -7,8 +7,9 @@
 #include <fmt/color.h>
 #include <tetragon/initializations.hpp>
 #include <tetragon/applications.hpp>
-#include <tetragon/graphics.hpp>
 #include <tetragon/graphics/primitives.hpp>
+#include <tetragon/graphics/shaders.hpp>
+#include <tetragon/graphics/shapes.hpp>
 
 #include "resources.hpp"
 
