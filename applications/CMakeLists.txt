@@ -4,7 +4,6 @@ set(SOURCES
 	src/applications.cc
 	src/initializations.cc
 )
-file(GLOB Headers include/**.hpp)
 
 find_package(glad REQUIRED)
 find_package(glfw3 REQUIRED)

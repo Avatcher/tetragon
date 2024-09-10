@@ -4,19 +4,13 @@ set(SOURCES
 		src/shaders.cc
 		src/shapes.cc
 )
-set(HEADERS_DIR include/tetragon/graphics)
-set(HEADERS
-		${HEADERS_DIR}/primitives.hpp
-		${HEADERS_DIR}/shaders.hpp
-		${HEADERS_DIR}/shapes.hpp
-)
 
 find_package(opengl_system REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(glad REQUIRED)
 
-add_library(${MODULE_NAME} STATIC ${SOURCES} ${HEADERS})
+add_library(${MODULE_NAME} STATIC ${SOURCES})
 
 target_include_directories(${MODULE_NAME} PRIVATE include/tetragon)
 target_include_directories(${MODULE_NAME} PUBLIC include)
