@@ -5,6 +5,8 @@
 
 #include "shaders.hpp"
 
+#include "primitives.hpp"
+
 namespace tetragon::graphics {
 
 namespace {
@@ -93,16 +95,16 @@ uint Uniform<uint>::value() const {
 }
 
 template<>
-void Uniform<Vertex>::set_value(Vertex const& value) {
+void Uniform<Vector3>::set_value(Vector3 const& value) {
 	bind_program();
 	glUniform3f(location(), value.x, value.y, value.z);
 }
 
 template<>
-Vertex Uniform<Vertex>::value() const {
+Vector3 Uniform<Vector3>::value() const {
 	float x, y, z;
 	glGetUniformfv(program().m_object, location(), &x);
-	return Vertex { x, y, z }; 
+	return vec( x, y, z );
 }
 
 ShaderType Shader::get_type() const {

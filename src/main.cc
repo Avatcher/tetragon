@@ -22,7 +22,7 @@ using namespace tetragon::graphics;
 
 void postpone_closing(Window& window, int seconds);
 ShaderProgram create_shader_program();
-void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset);
+void update_uniforms(Uniform<float> u_green, Uniform<Vector3> u_offset);
 
 int main() {
 	init_logs();
@@ -54,25 +54,26 @@ int main() {
 	});
 
 	const Triangle triangle{
-		{ -.5f, -.25f },
-		{	.5f, -.25f },
-		{	.0f,	.75f }
+		vec( -.5f, -.25f ),
+		vec(	.5f, -.25f ),
+		vec(	.0f,	.75f )
 	};
 	const Triangle triangleBravo{
-		{ -.5f, -.25f },
-		{	.5f, -.25f },
-		{	.0f, -.8f }
+		vec( -.5f, -.25f ),
+		vec(	.5f, -.25f ),
+		vec(	.0f, -.8f )
 	};
-	const Square square{
-		{ .5, .5 },
-		{ -.5, -.5 }
-	};
+	// const Square square{
+	// 	{ .5, .5 },
+	// 	{ -.5, -.5 }
+	// };
 
 	VertexArray VAO;
 	VAO.bind(); 
 
+	auto vertexSize = Vector3().size();
 	constexpr auto usage = VertexBuffer::Usage::STATIC;
-	VertexBuffer vbo1(usage), vbo2(usage);
+	VertexBuffer vbo1(vertexSize, usage), vbo2(vertexSize, usage);
 
 	ShaderProgram shaderProgram = create_shader_program();
 	shaderProgram.bind();
@@ -87,18 +88,18 @@ int main() {
 	vbo1.add_attribute(posAttrib);
 	vbo2.add_attribute(colorAttrib);
 
-	vbo1.buffer(triangle);
-	vbo1.buffer(triangleBravo);
+	triangle.buffer_to(vbo1);
+	triangleBravo.buffer_to(vbo1);
 
-	vbo2.buffer(Vertex{ 1, 0, 0 });
-	vbo2.buffer(Vertex{ 1, 1, 0 });
-	vbo2.buffer(Vertex{ 1, 1, 1 });
-	vbo2.buffer(Vertex{ 0, 1, 0 });
-	vbo2.buffer(Vertex{ 0, 1, 1 });
-	vbo2.buffer(Vertex{ 1, 1, 1 });
+	vbo2.buffer(vec(1, 0, 0));
+	vbo2.buffer(vec( 1, 1, 0 ));
+	vbo2.buffer(vec( 1, 1, 1 ));
+	vbo2.buffer(vec( 0, 1, 0 ));
+	vbo2.buffer(vec( 0, 1, 1 ));
+	vbo2.buffer(vec( 1, 1, 1 ));
 
 	auto u_green = shaderProgram.uniform<float>("u_green");
-	auto u_offset = shaderProgram.uniform<Vertex>("u_offset");
+	auto u_offset = shaderProgram.uniform<Vector3>("u_offset");
 	auto u_time = shaderProgram.uniform<float>("u_time");
 
 	spdlog::info("u_green.is_blank() == {}", u_green.is_blank());
@@ -155,13 +156,13 @@ ShaderProgram create_shader_program() {
 		.build();
 }
 
-void update_uniforms(Uniform<float> u_green, Uniform<Vertex> u_offset) {
+void update_uniforms(Uniform<float> u_green, Uniform<Vector3> u_offset) {
 	const float time = glfwGetTime();
 	const float timeSin = sin(time);
 	const float greenValue = fabs(timeSin);
 	u_green.set_value(greenValue);
 
 	constexpr float length = .5f;
-	const Vertex offset{ length * (1.f - timeSin) - length, 0, 0 };
+	const Vector3 offset{ length * (1.f - timeSin) - length, 0, 0 };
 	u_offset.set_value(offset);
 }

@@ -6,6 +6,7 @@
 #else
 #define CONSTEXPR
 #endif
+#include "vertices.hpp"
 
 namespace tetragon::graphics {
 
@@ -16,8 +17,9 @@ struct Vector4;
 using Scalar = float;
 
 struct Vector2 {
-	float x, y;
+	float x = 0, y = 0;
 
+	CONSTEXPR Vector2() = default;
 	CONSTEXPR Vector2(float x, float y);
 
 	CONSTEXPR [[nodiscard]] float length() const;
@@ -40,12 +42,18 @@ struct Vector2 {
 	CONSTEXPR Vector2 operator/(Vector2 divider) const;
 
 	CONSTEXPR Vector2 operator-() const;
+
+	CONSTEXPR operator Vector3() const;
 };
 
-struct Vector3 : Vector2 {
-	float z;
+struct Vector3 : Vector2, Vertex {
+	float z = 0;
 
+	CONSTEXPR Vector3() = default;
 	CONSTEXPR Vector3(float x, float y, float z);
+
+	[[nodiscard]] const void* data() const override;
+	[[nodiscard]] std::size_t size() const override;
 
 	CONSTEXPR [[nodiscard]] float length() const;
 	CONSTEXPR [[nodiscard]] float length_squared() const;
@@ -70,8 +78,9 @@ struct Vector3 : Vector2 {
 };
 
 struct Vector4 : Vector3 {
-	float w;
+	float w = 0;
 
+	CONSTEXPR Vector4() = default;
 	CONSTEXPR Vector4(float x, float y, float z, float w);
 
 	CONSTEXPR [[nodiscard]] float length() const;

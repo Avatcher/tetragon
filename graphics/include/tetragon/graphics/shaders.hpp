@@ -8,6 +8,8 @@
 
 namespace tetragon::graphics {
 
+struct Vector3;
+
 enum class ShaderType {
 	VERTEX, FRAGMENT	
 };
@@ -34,7 +36,8 @@ template<> struct is_uniformable<double> : std::bool_constant<true> {};
 template<> struct is_uniformable<float> : std::bool_constant<true> {};
 template<> struct is_uniformable<int> : std::bool_constant<true> {};
 template<> struct is_uniformable<uint> : std::bool_constant<true> {};
-template<> struct is_uniformable<Vertex> : std::bool_constant<true> {};
+
+template<> struct is_uniformable<Vector3> : std::bool_constant<true> {};
 
 template<class T>
 concept IsUniformable = is_uniformable<T>::value;

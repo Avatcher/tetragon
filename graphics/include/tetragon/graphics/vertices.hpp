@@ -1,12 +1,24 @@
 #ifndef VERTICES_HPP
 #define VERTICES_HPP
 
-#include <initializer_list>
 #include <glad/glad.h>
+#include <string>
+#include <memory>
 
 #include "definitions.hpp"
 
 namespace tetragon::graphics {
+
+    class VertexBuffer;
+
+    struct Vertex {
+        using byte = unsigned char;
+
+        virtual ~Vertex() = default;
+
+        [[nodiscard]] virtual const void* data() const = 0;
+        [[nodiscard]] virtual std::size_t size() const = 0;
+    };
 
     class VertexAttribute {
         const char* const m_name;
@@ -52,37 +64,42 @@ namespace tetragon::graphics {
     private:
         using byte = char;
 
-        static constexpr size_t DEFAULT_BUFFER_SIZE = 32;
+        static constexpr size_t DEFAULT_BUFFER_SIZE = 8;
 
         const GLObject m_object;
+        const std::size_t m_vertexSize;
+
         byte* m_buffer;
         byte* m_ptr;
         uint m_size = 0;
-        uint m_maxSize = DEFAULT_BUFFER_SIZE;
+        uint m_maxSize = DEFAULT_BUFFER_SIZE * m_vertexSize;
+
         std::string m_name;
         Usage m_usage;
 
     public:
-        VertexBuffer();
-        explicit VertexBuffer(Usage usage);
+        explicit VertexBuffer(std::size_t vertexSize);
+        VertexBuffer(std::size_t vertexSize, Usage usage);
         virtual ~VertexBuffer();
 
         [[nodiscard]] Usage usage() const;
         void set_usage(Usage usage);
 
-        [[nodiscard]] unsigned long size() const;
+        [[nodiscard]] std::size_t size() const;
+        [[nodiscard]] std::size_t vertex_size() const;
 
         void bind() const;
         void add_attribute(VertexAttribute const& attribute);
 
-        void buffer(const void* ptr, unsigned long size);
+        void buffer(std::shared_ptr<Vertex> const& vertex);
 
-        template<class T>
-        void buffer(T const& data) {
-            data.buffer_to(*this);
+        template<class T> requires std::is_base_of_v<Vertex, T>
+        void buffer(T const& vertex) {
+            buffer(vertex.data(), vertex.size());
         }
 
     private:
+        void buffer(const void* ptr, unsigned long size);
         void ensure_capacity(uint additionalSize);
     };
 
@@ -94,19 +111,6 @@ namespace tetragon::graphics {
 
         void bind() const;
     };
-
-    class Vertex {
-    public:
-        float x, y, z;
-
-        Vertex() = default;
-        Vertex(std::initializer_list<float> values);
-
-        void buffer_to(VertexBuffer& buffer) const;
-
-        // std::string to_string() const override;
-    };
-
 } // tetragon::graphics
 
 #endif //VERTICES_HPP

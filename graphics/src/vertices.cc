@@ -20,16 +20,13 @@ namespace tetragon::graphics {
 	}
 }
 
-VertexBuffer::VertexBuffer(): VertexBuffer(Usage::STATIC) {}
+VertexBuffer::VertexBuffer(const std::size_t vertexSize): VertexBuffer(vertexSize, Usage::STATIC) {}
 
-VertexBuffer::VertexBuffer(const Usage usage):
+VertexBuffer::VertexBuffer(const std::size_t vertexSize, const Usage usage):
 		m_object(create_vertex_buffer()),
+		m_vertexSize(vertexSize),
 		m_usage(usage) {
 	m_buffer = new byte[m_maxSize] {};
-	for (int i = 0; i < m_maxSize; i++) {
-		const byte b = m_buffer[i];
-		assert(b == 0);
-	}
 	m_ptr = m_buffer;
 	m_name = "Buffer";
 	bind();
@@ -75,6 +72,13 @@ void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
 	fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
 }
 
+void VertexBuffer::buffer(std::shared_ptr<Vertex> const& vertex) {
+	if (vertex->size() != m_vertexSize) {
+		throw std::runtime_error(fmt::format("Cannot buffer Vertex of size {} into {}-sized VertexBuffer", vertex->size(), m_size));
+	}
+	buffer(vertex->data(), vertex->size());
+}
+
 VertexBuffer::Usage VertexBuffer::usage() const {
 	return m_usage;
 }
@@ -101,8 +105,12 @@ void VertexBuffer::buffer(const void* ptr, const unsigned long size) {
 	);
 }
 
-unsigned long VertexBuffer::size() const {
+std::size_t VertexBuffer::size() const {
 	return m_size;
+}
+
+std::size_t VertexBuffer::vertex_size() const {
+    return m_vertexSize;
 }
 
 VertexArray::VertexArray():
@@ -172,20 +180,20 @@ VertexAttribute VertexAttribute::Builder::build() const {
 	return { m_name, m_size, m_type, m_normalized, m_stride };
 }
 
-Vertex::Vertex(const std::initializer_list<float> values) {
-	if (values.size() >= 3) {
-		z = *(values.begin() + 2);
-	}
-	if (values.size() >= 2) {
-		y = *(values.begin() + 1);
-	}
-	if (values.size() >= 1) {
-		x = *(values.begin());
-	}
-}
-
-void Vertex::buffer_to(VertexBuffer& buffer) const {
-	buffer.buffer(&x, sizeof(decltype(x)) * 3);
-}
+// Vertex::Vertex(const std::initializer_list<float> values) {
+// 	if (values.size() >= 3) {
+// 		z = *(values.begin() + 2);
+// 	}
+// 	if (values.size() >= 2) {
+// 		y = *(values.begin() + 1);
+// 	}
+// 	if (values.size() >= 1) {
+// 		x = *(values.begin());
+// 	}
+// }
+//
+// void Vertex::buffer_to(VertexBuffer& buffer) const {
+// 	buffer.buffer(&x, sizeof(decltype(x)) * 3);
+// }
 
 } // tetragon::graphics
