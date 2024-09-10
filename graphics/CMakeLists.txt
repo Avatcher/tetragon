@@ -3,6 +3,7 @@ set(SOURCES
 		src/primitives.cc
 		src/shaders.cc
 		src/shapes.cc
+		src/vertices.cc
 )
 
 find_package(opengl_system REQUIRED)
