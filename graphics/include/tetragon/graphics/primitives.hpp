@@ -44,6 +44,7 @@ struct Vector2 {
 	CONSTEXPR Vector2 operator-() const;
 
 	CONSTEXPR operator Vector3() const;
+	CONSTEXPR operator Vector4() const;
 };
 
 struct Vector3 : Vector2, Vertex {
@@ -75,6 +76,9 @@ struct Vector3 : Vector2, Vertex {
 	CONSTEXPR Vector3 operator/(Vector3 divider) const;
 
 	CONSTEXPR Vector3 operator-() const;
+
+	CONSTEXPR operator Vector2() const;
+	CONSTEXPR operator Vector4() const;
 };
 
 struct Vector4 : Vector3 {
@@ -103,6 +107,9 @@ struct Vector4 : Vector3 {
 	CONSTEXPR Vector4 operator/(Vector4 divider) const;
 
 	CONSTEXPR Vector4 operator-() const;
+
+	CONSTEXPR operator Vector2() const;
+	CONSTEXPR operator Vector3() const;
 };
 
 CONSTEXPR Vector2 vec(float x, float y);
