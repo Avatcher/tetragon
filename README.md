@@ -7,22 +7,7 @@ should this be considered a serious project with any purpose beside learning.
 
 ## Building
 
-1. You can install all the needed packages using [vcpkg](https://vcpkg.io/):
-```sh
-vcpkg install
-```
-
-2. Then run CMake and compile the project using Makefile:
-```sh
-mkdir build
-cd build
-cmake .. && make
-```
-
-3. A single executable should be generated:
-```sh
-./tetragon
-```
+...
 
 ## Log icons
 Tetragon utilizes emojis in its logs message format. To see them, you can install
