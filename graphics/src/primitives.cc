@@ -1,5 +1,6 @@
 #include <limits>
-#include "graphics/primitives.hpp"
+
+#include "primitives.hpp"
 
 namespace {
 double CONSTEXPR sqrtNewtonRaphson(const double x, const double current, const double previous) {

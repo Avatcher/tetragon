@@ -1,10 +1,9 @@
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 #include <fmt/color.h>
-#include <fmt/ranges.h>
 #include <stdexcept>
 
-#include "graphics/shaders.hpp"
+#include "shaders.hpp"
 
 namespace tetragon::graphics {
 

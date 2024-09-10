@@ -1,8 +1,8 @@
 #include <spdlog/spdlog.h>
 #include <fmt/color.h>
 
-#include "tetragon/graphics/vertices.hpp"
-#include "tetragon/graphics/shaders.hpp"
+#include "vertices.hpp"
+#include "shaders.hpp"
 
 namespace tetragon::graphics {
 

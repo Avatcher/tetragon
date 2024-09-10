@@ -13,7 +13,7 @@ find_package(glad REQUIRED)
 
 add_library(${MODULE_NAME} STATIC ${SOURCES})
 
-target_include_directories(${MODULE_NAME} PRIVATE include/tetragon)
+target_include_directories(${MODULE_NAME} PRIVATE include/tetragon/graphics)
 target_include_directories(${MODULE_NAME} PUBLIC include)
 
 target_compile_features(${MODULE_NAME} PRIVATE cxx_std_20)

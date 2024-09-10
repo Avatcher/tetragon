@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "graphics/shapes.hpp"
+#include "shapes.hpp"
 
 namespace tetragon::graphics {
 
