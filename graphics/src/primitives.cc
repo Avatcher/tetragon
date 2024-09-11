@@ -19,24 +19,17 @@ double CONSTEXPR sqrt(const double x) {
 
 namespace tetragon::graphics {
 
+#pragma region Vector2
 CONSTEXPR Vector2::Vector2(const float x, const float y):
 	x(x), y(y) {}
 
-CONSTEXPR Vector3::Vector3(const float x, const float y, const float z):
-	Vector2(x, y), z(z) {}
-
-const void* Vector3::data() const {
+const void* Vector2::data() const {
 	return &x;
 }
-
-std::size_t Vector3::size() const {
-	return 3 * sizeof(float);
+std::size_t Vector2::size() const {
+	return 2 * sizeof(float);
 }
 
-CONSTEXPR Vector4::Vector4(const float x, const float y, const float z, const float w):
-	Vector3(x, y, z), w(w) {}
-
-#pragma region Vector2
 CONSTEXPR float Vector2::length() const {
 	return sqrt(length_squared());
 }
@@ -88,17 +81,24 @@ CONSTEXPR Vector2 Vector2::operator-() const {
 	return Vector2 { -x, -y };
 }
 
-Vector2::operator Vector3() const {
+CONSTEXPR Vector2::operator Vector3() const {
 	return { x, y, 0 };
 }
 
-Vector2::operator Vector4() const {
+CONSTEXPR Vector2::operator Vector4() const {
 	return { x, y, 0, 0 };
 }
 
 #pragma endregion
 
 #pragma region Vector3
+CONSTEXPR Vector3::Vector3(const float x, const float y, const float z):
+	Vector2(x, y), z(z) {}
+
+std::size_t Vector3::size() const {
+	return 3 * sizeof(float);
+}
+
 CONSTEXPR float Vector3::length() const {
 	return sqrt(length_squared());
 }
@@ -150,17 +150,24 @@ CONSTEXPR Vector3 Vector3::operator-() const {
 	return Vector3 { -x, -y, -z };
 }
 
-Vector3::operator Vector2() const {
+CONSTEXPR Vector3::operator Vector2() const {
 	return { x, y };
 }
 
-Vector3::operator Vector4() const {
+CONSTEXPR Vector3::operator Vector4() const {
 	return { x, y, z, 0 };
 }
 
 #pragma endregion
 
 #pragma region Vector4
+CONSTEXPR Vector4::Vector4(const float x, const float y, const float z, const float w):
+	Vector3(x, y, z), w(w) {}
+
+std::size_t Vector4::size() const {
+	return 4 * sizeof(float);
+}
+
 CONSTEXPR float Vector4::length() const {
 	return sqrt(length_squared());
 }
@@ -212,11 +219,11 @@ CONSTEXPR Vector4 Vector4::operator-() const {
 	return Vector4 { -x, -y, -z, -w };
 }
 
-Vector4::operator Vector2() const {
+CONSTEXPR Vector4::operator Vector2() const {
 	return { x, y };
 }
 
-Vector4::operator Vector3() const {
+CONSTEXPR Vector4::operator Vector3() const {
 	return { x, y, z };
 }
 

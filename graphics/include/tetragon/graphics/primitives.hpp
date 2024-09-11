@@ -16,14 +16,17 @@ struct Vector4;
 
 using Scalar = float;
 
-struct Vector2 {
+struct Vector2 : Vertex {
 	float x = 0, y = 0;
 
 	CONSTEXPR Vector2() = default;
 	CONSTEXPR Vector2(float x, float y);
 
-	CONSTEXPR [[nodiscard]] float length() const;
-	CONSTEXPR [[nodiscard]] float length_squared() const;
+	[[nodiscard]] const void* data() const override;
+	[[nodiscard]] std::size_t size() const override;
+
+	[[nodiscard]] CONSTEXPR float length() const;
+	[[nodiscard]] CONSTEXPR float length_squared() const;
 
 	CONSTEXPR Vector2 operator+(Scalar const& other) const;
 	CONSTEXPR Vector2 operator+(Vector2 const& other) const;
@@ -47,17 +50,16 @@ struct Vector2 {
 	CONSTEXPR operator Vector4() const;
 };
 
-struct Vector3 : Vector2, Vertex {
+struct Vector3 : Vector2 {
 	float z = 0;
 
 	CONSTEXPR Vector3() = default;
 	CONSTEXPR Vector3(float x, float y, float z);
 
-	[[nodiscard]] const void* data() const override;
 	[[nodiscard]] std::size_t size() const override;
 
-	CONSTEXPR [[nodiscard]] float length() const;
-	CONSTEXPR [[nodiscard]] float length_squared() const;
+	[[nodiscard]] CONSTEXPR float length() const;
+	[[nodiscard]] CONSTEXPR float length_squared() const;
 
 	CONSTEXPR Vector3 operator+(Scalar const& other) const;
 	CONSTEXPR Vector3 operator+(Vector2 const& other) const;
@@ -87,8 +89,10 @@ struct Vector4 : Vector3 {
 	CONSTEXPR Vector4() = default;
 	CONSTEXPR Vector4(float x, float y, float z, float w);
 
-	CONSTEXPR [[nodiscard]] float length() const;
-	CONSTEXPR [[nodiscard]] float length_squared() const;
+	[[nodiscard]] std::size_t size() const override;
+
+	[[nodiscard]] CONSTEXPR float length() const;
+	[[nodiscard]] CONSTEXPR float length_squared() const;
 
 	CONSTEXPR Vector4 operator+(Scalar const& other) const;
 	CONSTEXPR Vector4 operator+(Vector2 const& other) const;
