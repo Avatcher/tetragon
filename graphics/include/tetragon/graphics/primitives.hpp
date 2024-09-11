@@ -22,8 +22,8 @@ struct Vector2 : Vertex {
 	CONSTEXPR Vector2() = default;
 	CONSTEXPR Vector2(float x, float y);
 
-	[[nodiscard]] const void* data() const override;
-	[[nodiscard]] std::size_t size() const override;
+	[[nodiscard]] const void* vertex_data() const;
+	[[nodiscard]] std::size_t vertex_size() const;
 
 	[[nodiscard]] CONSTEXPR float length() const;
 	[[nodiscard]] CONSTEXPR float length_squared() const;
@@ -56,7 +56,8 @@ struct Vector3 : Vector2 {
 	CONSTEXPR Vector3() = default;
 	CONSTEXPR Vector3(float x, float y, float z);
 
-	[[nodiscard]] std::size_t size() const override;
+	[[nodiscard]] const void* vertex_data() const;
+	[[nodiscard]] std::size_t vertex_size() const;
 
 	[[nodiscard]] CONSTEXPR float length() const;
 	[[nodiscard]] CONSTEXPR float length_squared() const;
@@ -89,7 +90,8 @@ struct Vector4 : Vector3 {
 	CONSTEXPR Vector4() = default;
 	CONSTEXPR Vector4(float x, float y, float z, float w);
 
-	[[nodiscard]] std::size_t size() const override;
+	[[nodiscard]] const void* vertex_data() const;
+	[[nodiscard]] std::size_t vertex_size() const;
 
 	[[nodiscard]] CONSTEXPR float length() const;
 	[[nodiscard]] CONSTEXPR float length_squared() const;

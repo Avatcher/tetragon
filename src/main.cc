@@ -71,7 +71,7 @@ int main() {
 	VertexArray VAO;
 	VAO.bind(); 
 
-	auto vertexSize = Vector3().size();
+	auto vertexSize = Vector3().vertex_size();
 	constexpr auto usage = VertexBuffer::Usage::STATIC;
 	VertexBuffer vbo1(vertexSize, usage), vbo2(vertexSize, usage);
 

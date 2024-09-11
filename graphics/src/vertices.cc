@@ -72,13 +72,6 @@ void VertexBuffer::add_attribute(VertexAttribute const& attribute) {
 	fmt::format(fmt::fg(fmt::color::aqua), "`{}`", attribute.name()));
 }
 
-void VertexBuffer::buffer(std::shared_ptr<Vertex> const& vertex) {
-	if (vertex->size() != m_vertexSize) {
-		throw std::runtime_error(fmt::format("Cannot buffer Vertex of size {} into {}-sized VertexBuffer", vertex->size(), m_size));
-	}
-	buffer(vertex->data(), vertex->size());
-}
-
 VertexBuffer::Usage VertexBuffer::usage() const {
 	return m_usage;
 }

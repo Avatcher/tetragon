@@ -12,12 +12,10 @@ namespace tetragon::graphics {
     class VertexBuffer;
 
     struct Vertex {
-        using byte = unsigned char;
-
-        virtual ~Vertex() = default;
-
-        [[nodiscard]] virtual const void* data() const = 0;
-        [[nodiscard]] virtual std::size_t size() const = 0;
+        [[nodiscard]] const void* vertex_data() const;
+        [[nodiscard]] std::size_t vertex_size() const;
+    protected:
+        Vertex() = default;
     };
 
     class VertexAttribute {
@@ -91,11 +89,9 @@ namespace tetragon::graphics {
         void bind() const;
         void add_attribute(VertexAttribute const& attribute);
 
-        void buffer(std::shared_ptr<Vertex> const& vertex);
-
         template<class T> requires std::is_base_of_v<Vertex, T>
         void buffer(T const& vertex) {
-            buffer(vertex.data(), vertex.size());
+            buffer(vertex.vertex_data(), vertex.vertex_size());
         }
 
     private:

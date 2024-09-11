@@ -23,10 +23,10 @@ namespace tetragon::graphics {
 CONSTEXPR Vector2::Vector2(const float x, const float y):
 	x(x), y(y) {}
 
-const void* Vector2::data() const {
+const void* Vector2::vertex_data() const {
 	return &x;
 }
-std::size_t Vector2::size() const {
+std::size_t Vector2::vertex_size() const {
 	return 2 * sizeof(float);
 }
 
@@ -95,7 +95,10 @@ CONSTEXPR Vector2::operator Vector4() const {
 CONSTEXPR Vector3::Vector3(const float x, const float y, const float z):
 	Vector2(x, y), z(z) {}
 
-std::size_t Vector3::size() const {
+const void* Vector3::vertex_data() const {
+	return &x;
+}
+std::size_t Vector3::vertex_size() const {
 	return 3 * sizeof(float);
 }
 
@@ -164,7 +167,10 @@ CONSTEXPR Vector3::operator Vector4() const {
 CONSTEXPR Vector4::Vector4(const float x, const float y, const float z, const float w):
 	Vector3(x, y, z), w(w) {}
 
-std::size_t Vector4::size() const {
+const void* Vector4::vertex_data() const {
+	return &x;
+}
+std::size_t Vector4::vertex_size() const {
 	return 4 * sizeof(float);
 }
 
