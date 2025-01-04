@@ -12,6 +12,7 @@
 #include <tetragon/graphics/shapes.hpp>
 
 #include "resources.hpp"
+#include "tetragon/graphics/textures.hpp"
 
 #define WINDOW_NAME "Tetragon"
 #define WINDOW_WIDTH 600
@@ -71,9 +72,10 @@ int main() {
 	VertexArray VAO;
 	VAO.bind(); 
 
-	auto vertexSize = Vector3().vertex_size();
 	constexpr auto usage = VertexBuffer::Usage::STATIC;
-	VertexBuffer vbo1(vertexSize, usage), vbo2(vertexSize, usage);
+	VertexBuffer vbo_position(Vector3().vertex_size(), usage),
+		vbo_color(Vector3().vertex_size(), usage),
+		vbo_texture(Vector2().vertex_size(), usage);
 
 	ShaderProgram shaderProgram = create_shader_program();
 	shaderProgram.bind();
@@ -84,19 +86,21 @@ int main() {
 
 	const VertexAttribute posAttrib = vertexAttribBuilder.set_name("pos").build();
 	const VertexAttribute colorAttrib = vertexAttribBuilder.set_name("color").build();
+	const VertexAttribute textureAttrib = vertexAttribBuilder.set_size(2).set_name("texCoord").build();
 
-	vbo1.add_attribute(posAttrib);
-	vbo2.add_attribute(colorAttrib);
+	vbo_position.add_attribute(posAttrib);
+	vbo_color.add_attribute(colorAttrib);
+	vbo_texture.add_attribute(textureAttrib);
 
-	triangle.buffer_to(vbo1);
-	triangleBravo.buffer_to(vbo1);
+	triangle.buffer_to(vbo_position);
 
-	vbo2.buffer(vec(1, 0, 0));
-	vbo2.buffer(vec( 1, 1, 0 ));
-	vbo2.buffer(vec( 1, 1, 1 ));
-	vbo2.buffer(vec( 0, 1, 0 ));
-	vbo2.buffer(vec( 0, 1, 1 ));
-	vbo2.buffer(vec( 1, 1, 1 ));
+	vbo_color.buffer(vec(1, 0, 0));
+	vbo_color.buffer(vec( 1, 1, 0 ));
+	vbo_color.buffer(vec( 1, 1, 1 ));
+
+	vbo_texture.buffer(vec(0, 0));
+	vbo_texture.buffer(vec(1, 0));
+	vbo_texture.buffer(vec(0.5, 1));
 
 	auto u_green = shaderProgram.uniform<float>("u_green");
 	auto u_offset = shaderProgram.uniform<Vector3>("u_offset");
@@ -111,8 +115,11 @@ int main() {
 	auto u_secret = shaderProgram.uniform<int>("u_secret");
 	u_secret.set_value(1024);
 
-	auto v = vec(1, 1);
-	spdlog::info("({}|{}) length: {}", v.x, v.y, v.length());
+	auto texturePath = "../resources/textures/bricks.png";
+	auto texture = Texture::from_file(texturePath);
+	texture.set_wrapping(TextureWrapping::REPEAT);
+	texture.set_downscaling(TextureFiltering::NEAREST);
+	texture.set_upscaling(TextureFiltering::NEAREST);
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// postpone_closing(window, 2);
@@ -124,7 +131,7 @@ int main() {
 		update_uniforms(u_green, u_offset);
 
 		VAO.bind();
-		glDrawArrays(GL_TRIANGLES, 0, vbo1.size() / (3 * sizeof(float)));
+		glDrawArrays(GL_TRIANGLES, 0, vbo_position.size() / (3 * sizeof(float)));
 
 		window.swap_buffers();
 		glfwPollEvents();

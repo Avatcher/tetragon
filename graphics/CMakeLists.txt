@@ -4,12 +4,14 @@ set(SOURCES
 		src/shaders.cc
 		src/shapes.cc
 		src/vertices.cc
+		src/textures.cc
 )
 
 find_package(opengl_system REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(glad REQUIRED)
+find_package(stb REQUIRED)
 
 add_library(${MODULE_NAME} STATIC ${SOURCES})
 
@@ -24,4 +26,5 @@ target_link_libraries(${MODULE_NAME}
 		opengl::opengl
 		spdlog::spdlog
 		glad::glad
+		stb::stb
 )
