@@ -142,8 +142,8 @@ int main() {
 		shaderProgram.bind();
 		VAO.bind();
 		// glDrawArrays(GL_TRIANGLES, 0, vbo_position.size() / vbo_position.vertex_size());
-		glDrawElements(GL_TRIANGLES, ebo.size(), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		ebo.draw(GL_TRIANGLES);
+		VertexArray::unbind_all();
 
 		window.swap_buffers();
 		glfwPollEvents();

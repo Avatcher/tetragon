@@ -103,6 +103,8 @@ namespace tetragon::graphics {
     class VertexArray final {
         const GLObject m_object;
     public:
+        static void unbind_all();
+
         VertexArray();
         virtual ~VertexArray();
 
@@ -126,6 +128,8 @@ namespace tetragon::graphics {
 
         void bind();
         void buffer_indices(std::initializer_list<uint> const& indices);
+
+        void draw(GLenum mode);
     };
 } // tetragon::graphics
 

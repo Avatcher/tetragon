@@ -106,6 +106,10 @@ std::size_t VertexBuffer::vertex_size() const {
     return m_vertexSize;
 }
 
+void VertexArray::unbind_all() {
+    glBindVertexArray(0);
+}
+
 VertexArray::VertexArray():
 		m_object(create_vertex_array()) {
 }
@@ -142,6 +146,11 @@ void ElementBuffer::buffer_indices(std::initializer_list<uint> const& indices) {
     bind();
     m_indices.insert(m_indices.end(), indices.begin(), indices.end());
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint), &*m_indices.begin(), static_cast<GLenum>(m_usage));
+}
+
+void ElementBuffer::draw(const GLenum mode) {
+    bind();
+    glDrawElements(mode, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 }
 
 VertexAttribute::VertexAttribute(const char* name, const uint size, const GLenum type,
