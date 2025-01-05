@@ -107,6 +107,17 @@ Vector3 Uniform<Vector3>::value() const {
 	return vec( x, y, z );
 }
 
+template<>
+void Uniform<Texture>::set_value(Texture const& value) {
+	bind_program();
+	glUniform1i(location(), value.unit());
+}
+
+template<>
+Texture Uniform<Texture>::value() const {
+	throw std::runtime_error(fmt::format("Tried to acquire texture from Texture Uniform `{}`", name()));
+}
+
 ShaderType Shader::get_type() const {
 	return m_type;
 }

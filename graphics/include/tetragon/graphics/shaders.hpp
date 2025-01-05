@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 
+#include "textures.hpp"
 #include "vertices.hpp"
 
 namespace tetragon::graphics {
@@ -38,6 +39,7 @@ template<> struct is_uniformable<int> : std::bool_constant<true> {};
 template<> struct is_uniformable<uint> : std::bool_constant<true> {};
 
 template<> struct is_uniformable<Vector3> : std::bool_constant<true> {};
+template<> struct is_uniformable<Texture> : std::bool_constant<true> {};
 
 template<class T>
 concept IsUniformable = is_uniformable<T>::value;

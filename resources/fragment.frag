@@ -4,8 +4,15 @@ in vec3 v_color;
 in vec2 v_textureCoordinates;
 
 uniform float u_green;
-uniform sampler2D u_texture;
+uniform vec3 u_offset;
+
+uniform sampler2D u_textureBricks;
+uniform sampler2D u_texturePaint;
 
 void main() {
-	gl_FragColor = texture(u_texture, v_textureCoordinates) * vec4(v_color, 1.0f);
+	gl_FragColor = mix(
+		texture(u_textureBricks, v_textureCoordinates),
+		texture(u_texturePaint, v_textureCoordinates) * vec4(v_color, 1.0f),
+		u_offset.x + 0.5
+	);
 }

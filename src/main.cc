@@ -114,11 +114,21 @@ int main() {
 	auto u_green = shaderProgram.uniform<float>("u_green");
 	auto u_offset = shaderProgram.uniform<Vector3>("u_offset");
 
-	auto texturePath = "../resources/textures/bricks.png";
-	auto texture = Texture::from_file(texturePath);
-	texture.set_wrapping(TextureWrapping::REPEAT);
-	texture.set_downscaling(TextureFiltering::NEAREST);
-	texture.set_upscaling(TextureFiltering::NEAREST);
+	auto textureBricks = Texture::from_file("../resources/textures/bricks.png");
+	textureBricks.set_wrapping(TextureWrapping::REPEAT);
+	textureBricks.set_downscaling(TextureFiltering::NEAREST);
+	textureBricks.set_upscaling(TextureFiltering::NEAREST);
+
+	auto texturePaint = Texture::from_file("../resources/textures/paint.png");
+	texturePaint.set_wrapping(TextureWrapping::REPEAT);
+	texturePaint.set_downscaling(TextureFiltering::NEAREST);
+	texturePaint.set_upscaling(TextureFiltering::NEAREST);
+
+	textureBricks.bind(0);
+	texturePaint.bind(1);
+
+	shaderProgram.uniform<Texture>("u_textureBricks").set_value(textureBricks);
+	shaderProgram.uniform<Texture>("u_texturePaint").set_value(texturePaint);
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// postpone_closing(window, 2);
@@ -130,7 +140,6 @@ int main() {
 		update_uniforms(u_green, u_offset);
 
 		shaderProgram.bind();
-		texture.bind();
 		VAO.bind();
 		// glDrawArrays(GL_TRIANGLES, 0, vbo_position.size() / vbo_position.vertex_size());
 		glDrawElements(GL_TRIANGLES, ebo.size(), GL_UNSIGNED_INT, 0);

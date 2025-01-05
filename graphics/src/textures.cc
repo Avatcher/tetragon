@@ -1,8 +1,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <stdexcept>
 
 #include "definitions.hpp"
 #include "textures.hpp"
+
+#include <fmt/format.h>
 
 namespace {
     tetragon::graphics::GLObject genTextureObject() {
@@ -32,8 +35,24 @@ Texture::Texture(const unsigned char* data, const int width, const int height):
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 
+int Texture::unit() const {
+    return m_unit;
+}
+
 void Texture::bind() {
     glBindTexture(GL_TEXTURE_2D, m_object);
+}
+
+void Texture::bind(const int unit) {
+    int glMaxTextureUnits;
+    glGetIntegerv(GL_MAX_TEXTURE_UNITS, &glMaxTextureUnits);
+    if (unit < 0 || unit > glMaxTextureUnits) {
+        throw std::invalid_argument(fmt::format("Tried to assign a Texture Unit `{}` outside the limit `0-{}`", unit, glMaxTextureUnits));
+    }
+    const GLenum glUnit = GL_TEXTURE0 + unit;
+    glActiveTexture(glUnit);
+    bind();
+    m_unit = unit;
 }
 
 void Texture::set_wrapping(TextureWrapping wrapping) {
