@@ -120,6 +120,7 @@ namespace tetragon::graphics {
         using Usage = VertexBuffer::Usage;
 
         ElementBuffer();
+        ~ElementBuffer();
 
         [[nodiscard]] Usage usage() const;
         void set_usage(Usage usage);

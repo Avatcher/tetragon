@@ -126,6 +126,10 @@ ElementBuffer::ElementBuffer(): m_object(create_buffer()) {
 	set_usage(Usage::STATIC);
 }
 
+ElementBuffer::~ElementBuffer() {
+    glDeleteBuffers(1, &m_object);
+}
+
 ElementBuffer::Usage ElementBuffer::usage() const {
     return m_usage;
 }
