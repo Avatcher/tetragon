@@ -153,10 +153,6 @@ CONSTEXPR Vector3 Vector3::operator-() const {
 	return Vector3 { -x, -y, -z };
 }
 
-CONSTEXPR Vector3::operator Vector2() const {
-	return { x, y };
-}
-
 CONSTEXPR Vector3::operator Vector4() const {
 	return { x, y, z, 0 };
 }
@@ -224,15 +220,6 @@ CONSTEXPR Vector4 Vector4::operator/(Vector4 divider) const {
 CONSTEXPR Vector4 Vector4::operator-() const {
 	return Vector4 { -x, -y, -z, -w };
 }
-
-CONSTEXPR Vector4::operator Vector2() const {
-	return { x, y };
-}
-
-CONSTEXPR Vector4::operator Vector3() const {
-	return { x, y, z };
-}
-
 #pragma endregion
 
 CONSTEXPR Vector2 vec(const float x, const float y) { return Vector2 { x, y }; }
