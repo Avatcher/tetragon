@@ -92,28 +92,27 @@ int main() {
 	vbo_color.add_attribute(colorAttrib);
 	vbo_texture.add_attribute(textureAttrib);
 
-	triangle.buffer_to(vbo_position);
+	vbo_position.buffer(vec(-.5, -.5, 1));
+	vbo_position.buffer(vec(-.5, .5, 1));
+	vbo_position.buffer(vec(.5, -.5, 1));
+	vbo_position.buffer(vec(.5, .5, 1));
 
 	vbo_color.buffer(vec(1, 0, 0));
 	vbo_color.buffer(vec( 1, 1, 0 ));
 	vbo_color.buffer(vec( 1, 1, 1 ));
+	vbo_color.buffer(vec( 0, 1, 1 ));
 
 	vbo_texture.buffer(vec(0, 0));
+	vbo_texture.buffer(vec(0, 1));
 	vbo_texture.buffer(vec(1, 0));
-	vbo_texture.buffer(vec(0.5, 1));
+	vbo_texture.buffer(vec(1, 1));
+
+	ElementBuffer ebo;
+	ebo.buffer_indices({0, 1, 2});
+	ebo.buffer_indices({1, 2, 3});
 
 	auto u_green = shaderProgram.uniform<float>("u_green");
 	auto u_offset = shaderProgram.uniform<Vector3>("u_offset");
-	auto u_time = shaderProgram.uniform<float>("u_time");
-
-	spdlog::info("u_green.is_blank() == {}", u_green.is_blank());
-	spdlog::info("u_time.is_blank() == {}", u_time.is_blank());
-
-	u_time.set_value(1024);
-	spdlog::info("u_time.value() == {}", u_time.value());
-
-	auto u_secret = shaderProgram.uniform<int>("u_secret");
-	u_secret.set_value(1024);
 
 	auto texturePath = "../resources/textures/bricks.png";
 	auto texture = Texture::from_file(texturePath);
@@ -130,8 +129,12 @@ int main() {
 		controls.process();
 		update_uniforms(u_green, u_offset);
 
+		shaderProgram.bind();
+		texture.bind();
 		VAO.bind();
-		glDrawArrays(GL_TRIANGLES, 0, vbo_position.size() / (3 * sizeof(float)));
+		// glDrawArrays(GL_TRIANGLES, 0, vbo_position.size() / vbo_position.vertex_size());
+		glDrawElements(GL_TRIANGLES, ebo.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 
 		window.swap_buffers();
 		glfwPollEvents();

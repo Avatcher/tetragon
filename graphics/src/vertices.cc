@@ -7,7 +7,7 @@
 namespace tetragon::graphics {
 
     namespace {
-	GLObject create_vertex_buffer() {
+	GLObject create_buffer() {
 		GLObject buffer;
 		glGenBuffers(1, &buffer);
 		return buffer;
@@ -23,7 +23,7 @@ namespace tetragon::graphics {
 VertexBuffer::VertexBuffer(const std::size_t vertexSize): VertexBuffer(vertexSize, Usage::STATIC) {}
 
 VertexBuffer::VertexBuffer(const std::size_t vertexSize, const Usage usage):
-		m_object(create_vertex_buffer()),
+		m_object(create_buffer()),
 		m_vertexSize(vertexSize),
 		m_usage(usage) {
 	m_buffer = new byte[m_maxSize] {};
@@ -118,7 +118,33 @@ void VertexArray::bind() const {
 	glBindVertexArray(m_object);
 }
 
-	VertexAttribute::VertexAttribute(const char* name, const uint size, const GLenum type,
+ElementBuffer::ElementBuffer(): m_object(create_buffer()) {
+	set_usage(Usage::STATIC);
+}
+
+ElementBuffer::Usage ElementBuffer::usage() const {
+    return m_usage;
+}
+
+void ElementBuffer::set_usage(Usage usage) {
+    m_usage = usage;
+}
+
+std::size_t ElementBuffer::size() const {
+    return m_indices.size();
+}
+
+void ElementBuffer::bind() {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_object);
+}
+
+void ElementBuffer::buffer_indices(std::initializer_list<uint> const& indices) {
+    bind();
+    m_indices.insert(m_indices.end(), indices.begin(), indices.end());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint), &*m_indices.begin(), static_cast<GLenum>(m_usage));
+}
+
+VertexAttribute::VertexAttribute(const char* name, const uint size, const GLenum type,
                                  const bool normalized, const uint stride):
 	m_name(name), m_size(size), m_type(type),
 	m_normalized(normalized), m_stride(stride) {

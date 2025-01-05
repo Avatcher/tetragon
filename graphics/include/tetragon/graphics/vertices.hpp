@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "definitions.hpp"
 
@@ -106,6 +107,25 @@ namespace tetragon::graphics {
         virtual ~VertexArray();
 
         void bind() const;
+    };
+
+    class ElementBuffer final {
+        const GLObject m_object;
+
+        VertexBuffer::Usage m_usage;
+        std::vector<uint> m_indices;
+    public:
+        using Usage = VertexBuffer::Usage;
+
+        ElementBuffer();
+
+        [[nodiscard]] Usage usage() const;
+        void set_usage(Usage usage);
+
+        [[nodiscard]] std::size_t size() const;
+
+        void bind();
+        void buffer_indices(std::initializer_list<uint> const& indices);
     };
 } // tetragon::graphics
 
